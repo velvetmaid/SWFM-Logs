@@ -30,3 +30,61 @@ left join wfm_schema.tm_cluster c on a.cluster_id = c.cluster_id
 where a.is_active=true) d
 on a.userid= d.ref_user_id
 group by a.absendate, a.userid, b.timein, c.timeout, d.username,d.area_id, d.regional_id, d.network_service_name,d.cluster_name,d.rtp order by a.absendate desc;
+
+-- Create user mobile management
+CREATE TABLE wfm_schema.tx_user_mobile_management
+(
+    tx_user_mobile_management_id SERIAL PRIMARY KEY,
+    username VARCHAR(255),
+    email VARCHAR(255),
+    user_password VARCHAR(255),
+    is_organic BOOLEAN,
+    tx_user_management_id INT,
+    role_id INT,
+    ref_user_id INT,
+    partner_id INT,
+    description VARCHAR(255),
+    created_by VARCHAR(255),
+    created_at TIMESTAMP WITHOUT TIME ZONE,
+    modified_by VARCHAR(255),
+    modified_at TIMESTAMP WITHOUT TIME ZONE,
+    deleted_by VARCHAR(255),
+    deleted_at TIMESTAMP WITHOUT TIME ZONE,
+    is_active BOOLEAN,
+    is_delete BOOLEAN,
+    employee_name VARCHAR(255),
+    area_id VARCHAR(5),
+    regional_id VARCHAR(5),
+    ns_id VARCHAR(30),
+    cluster_id INT,
+    deviceid VARCHAR(255),
+    rtp VARCHAR(255),
+)
+
+-- Create mapping_user_mobile_role unused
+CREATE TABLE wfm_schema.mapping_user_mobile_role (
+    mapping_user_mobile_role_id SERIAL PRIMARY KEY,
+    tx_user_management_id INT,
+    tx_user_mobile_management_id INT,
+    role_id INT,
+    ref_user_id INT,
+    role_name VARCHAR(255),
+    role_code VARCHAR(255)
+)
+
+-- Create mapping_user_mobile_role
+CREATE TABLE wfm_schema.tm_user_mobile_role
+(
+    tm_user_mobile_role_id SERIAL PRIMARY KEY,
+    code varchar(50),
+    name varchar(255),
+    description varchar(255),
+    created_by varchar(255),
+    created_at timestamp without time zone,
+    modified_by varchar(255),
+    modified_at timestamp without time zone,
+    deleted_by varchar(255),
+    deleted_at timestamp without time zone,
+    is_active boolean,
+    is_delete boolean
+)
