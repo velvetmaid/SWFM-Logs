@@ -88,3 +88,136 @@ CREATE TABLE wfm_schema.tm_user_mobile_role
     is_active boolean,
     is_delete boolean
 )
+
+----------UP PROD 24/10/2023-----------------
+CREATE TABLE IF NOT EXISTS wfm_schema.bps_exportpdf_form
+(
+    bps_exportpdf_form_id SERIAL PRIMARY KEY,
+    nama_vendor VARCHAR(255),
+    job_title VARCHAR(255),
+    responsibility_name1 VARCHAR(255),
+    responsibility_job_title1 VARCHAR(255),
+    responsibility_name2 VARCHAR(255),
+    responsibility_job_title2 VARCHAR(255),
+    created_by bigint,
+    created_at timestamp without time zone,
+    modified_by bigint,
+    modified_at time without time zone,
+)
+
+CREATE TABLE IF NOT EXISTS wfm_schema.bps_monitoring
+(
+    bps_monitoring_id SERIAL PRIMARY KEY,
+    no_ticket VARCHAR(255),
+    status_ticket VARCHAR(255),
+    ref_number VARCHAR(255),
+    source_ticket VARCHAR(255),
+    group_ticket VARCHAR(255),
+    mbp_unit VARCHAR(255),
+    site_class VARCHAR(255),
+    site_id VARCHAR(255),
+    site_name VARCHAR(255),
+    user_requestor VARCHAR(255),
+    role_name VARCHAR(255),
+    assignee_name VARCHAR(255),
+    cancel_note VARCHAR(255),
+    last_alarm_clear VARCHAR(255),
+    resolution_category1 VARCHAR(255),
+    resolution_category2 VARCHAR(255),
+    resolution_category3 VARCHAR(255),
+    issue_category VARCHAR(255),
+    root_category1 VARCHAR(255),
+    root_category2 VARCHAR(255),
+    root_category3 VARCHAR(255),
+    resolution_action VARCHAR(255),
+    user_submiter VARCHAR(255),
+    preparation_time timestamp without time zone,
+    approve_time timestamp without time zone,
+    request_time timestamp without time zone,
+    ack_time timestamp without time zone,
+    departure_time timestamp without time zone,
+    arrival_time timestamp without time zone,
+    cancel_time timestamp without time zone,
+    rh_stop_time timestamp without time zone,
+    leave_time timestamp without time zone,
+    submit_time timestamp without time zone,
+    user_approver VARCHAR(255),
+    running_hour_start_photo VARCHAR(50),
+    running_hour_stop_photo VARCHAR(50),
+    kwhphoto_before VARCHAR(50),
+    kwhphoto_after VARCHAR(50),
+    rectifierphoto_before VARCHAR(50),
+    rectifierphoto_after VARCHAR(50),
+    btsphoto_before VARCHAR(50),
+    btsphoto_after VARCHAR(50),
+    created_by bigint,
+    created_at timestamp without time zone,
+    modified_by bigint,
+    modified_at timestamp without time zone,
+    rh_start_time timestamp without time zone,
+    note VARCHAR(255),
+    need_key boolean,
+    kwhmeter boolean,
+    running_hour_start numeric,
+    running_hour_stop numeric,
+    assignee_id integer,
+    note_mobile VARCHAR(255),
+)
+
+CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support
+(
+    ticket_technical_support_id SERIAL PRIMARY KEY,
+    site_id VARCHAR(25),
+    cluster_area VARCHAR(25),
+    category VARCHAR(25),
+    ticket_subject VARCHAR(50),
+    job_details VARCHAR(255),
+    job_targets VARCHAR(255),
+    sla_start timestamp without time zone,
+    sla_end timestamp without time zone,
+    sla_range VARCHAR(25),
+    created_by bigint,
+    created_at timestamp without time zone,
+    modified_by bigint,
+    modified_at timestamp without time zone,
+    no_ticket UNIQUE VARCHAR(25),
+    activity_name VARCHAR(255),
+    role_name VARCHAR(255),
+    respone_time timestamp without time zone,
+    submit_time timestamp without time zone,
+    user_submitter VARCHAR(255),
+    approve_time timestamp without time zone,
+    user_approve VARCHAR(255),
+    note VARCHAR(255),
+    review VARCHAR(255),
+    status VARCHAR(25),
+    rootcause1 VARCHAR(255),
+    rootcause2 VARCHAR(255),
+    rootcause3 VARCHAR(255),
+    rootcause_remark VARCHAR(255),
+    resolution_action VARCHAR(255),
+    pic_id VARCHAR(255),
+    pic_name VARCHAR(255),
+    description VARCHAR(255),
+    name VARCHAR(255),
+    issue_category VARCHAR(255),
+)
+
+CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support_file
+(
+    ticket_technical_support_file_id SERIAL PRIMARY KEY,
+    ticket_technical_support_id integer,
+    file_name VARCHAR(255),
+    file_uploader VARCHAR(255),
+    file_uploader_role VARCHAR(255),
+    created_at VARCHAR(255),
+    file_sftp_id VARCHAR(255),
+    -- delete this column below
+    -- CONSTRAINT ticket_technical_support_file_pkey PRIMARY KEY (ticket_technical_support_file_id),
+    -- CONSTRAINT ticket_technical_support_file_ticket_technical_support_id_fkey FOREIGN KEY (ticket_technical_support_id)
+    -- REFERENCES wfm_schema.ticket_technical_support (ticket_technical_support_id) MATCH SIMPLE
+    -- ON UPDATE NO ACTION
+    -- ON DELETE NO ACTION
+)
+
+---------------END PROD 24/10/23
