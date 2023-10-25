@@ -58,7 +58,7 @@ CREATE TABLE wfm_schema.tx_user_mobile_management
     ns_id VARCHAR(30),
     cluster_id INT,
     deviceid VARCHAR(255),
-    rtp VARCHAR(255),
+    rtp VARCHAR(255)
 )
 
 -- Create mapping_user_mobile_role unused
@@ -102,7 +102,7 @@ CREATE TABLE IF NOT EXISTS wfm_schema.bps_exportpdf_form
     created_by bigint,
     created_at timestamp without time zone,
     modified_by bigint,
-    modified_at time without time zone,
+    modified_at time without time zone
 )
 
 CREATE TABLE IF NOT EXISTS wfm_schema.bps_monitoring
@@ -161,7 +161,7 @@ CREATE TABLE IF NOT EXISTS wfm_schema.bps_monitoring
     running_hour_start numeric,
     running_hour_stop numeric,
     assignee_id integer,
-    note_mobile VARCHAR(255),
+    note_mobile VARCHAR(255)
 )
 
 CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support
@@ -200,7 +200,7 @@ CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support
     pic_name VARCHAR(255),
     description VARCHAR(255),
     name VARCHAR(255),
-    issue_category VARCHAR(255),
+    issue_category VARCHAR(255)
 )
 
 CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support_file
@@ -211,7 +211,7 @@ CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support_file
     file_uploader VARCHAR(255),
     file_uploader_role VARCHAR(255),
     created_at VARCHAR(255),
-    file_sftp_id VARCHAR(255),
+    file_sftp_id VARCHAR(255)
     -- delete this column below
     -- CONSTRAINT ticket_technical_support_file_pkey PRIMARY KEY (ticket_technical_support_file_id),
     -- CONSTRAINT ticket_technical_support_file_ticket_technical_support_id_fkey FOREIGN KEY (ticket_technical_support_id)
