@@ -212,7 +212,6 @@ CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support_file
     file_uploader_role VARCHAR(255),
     created_at VARCHAR(255),
     file_sftp_id VARCHAR(255)
-    -- delete this column below
     -- CONSTRAINT ticket_technical_support_file_pkey PRIMARY KEY (ticket_technical_support_file_id),
     -- CONSTRAINT ticket_technical_support_file_ticket_technical_support_id_fkey FOREIGN KEY (ticket_technical_support_id)
     -- REFERENCES wfm_schema.ticket_technical_support (ticket_technical_support_id) MATCH SIMPLE
@@ -221,3 +220,63 @@ CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support_file
 )
 
 ---------------END PROD 24/10/23
+
+-- LAST PROD 29/OCT/23
+BEGIN;
+
+
+CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support
+(
+    ticket_technical_support_id integer NOT NULL DEFAULT nextval('wfm_schema.ticket_technical_support_ticket_technical_support_id_seq'::regclass),
+    site_id character varying(25) COLLATE pg_catalog."default",
+    cluster_area character varying(25) COLLATE pg_catalog."default",
+    category character varying(25) COLLATE pg_catalog."default",
+    ticket_subject character varying(50) COLLATE pg_catalog."default",
+    job_details character varying(255) COLLATE pg_catalog."default",
+    job_targets character varying(255) COLLATE pg_catalog."default",
+    sla_start timestamp without time zone,
+    sla_end timestamp without time zone,
+    sla_range character varying(25) COLLATE pg_catalog."default",
+    created_by bigint,
+    created_at timestamp without time zone,
+    modified_by bigint,
+    modified_at timestamp without time zone,
+    no_ticket character varying(25) COLLATE pg_catalog."default",
+    activity_name character varying(255) COLLATE pg_catalog."default",
+    role_name character varying(255) COLLATE pg_catalog."default",
+    respone_time timestamp without time zone,
+    submit_time timestamp without time zone,
+    user_submitter character varying(255) COLLATE pg_catalog."default",
+    approve_time timestamp without time zone,
+    user_approve character varying(255) COLLATE pg_catalog."default",
+    note character varying(255) COLLATE pg_catalog."default",
+    review character varying(255) COLLATE pg_catalog."default",
+    status character varying(25) COLLATE pg_catalog."default",
+    rootcause1 character varying(255) COLLATE pg_catalog."default",
+    rootcause2 character varying(255) COLLATE pg_catalog."default",
+    rootcause3 character varying(255) COLLATE pg_catalog."default",
+    rootcause_remark character varying(255) COLLATE pg_catalog."default",
+    resolution_action character varying(255) COLLATE pg_catalog."default",
+    pic_id character varying(255) COLLATE pg_catalog."default",
+    pic_name character varying(255) COLLATE pg_catalog."default",
+    description character varying(255) COLLATE pg_catalog."default",
+    name character varying(255) COLLATE pg_catalog."default",
+    issue_category character varying(255) COLLATE pg_catalog."default",
+    CONSTRAINT ticket_technical_support_pkey PRIMARY KEY (ticket_technical_support_id),
+    CONSTRAINT ticket_technical_support_no_ticket_key UNIQUE (no_ticket)
+);
+
+CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support_file
+(
+    ticket_technical_support_file_id integer NOT NULL DEFAULT nextval('wfm_schema.ticket_technical_support_file_ticket_technical_support_file_seq'::regclass),
+    ticket_technical_support_id integer,
+    file_name character varying(255) COLLATE pg_catalog."default",
+    file_uploader character varying(255) COLLATE pg_catalog."default",
+    file_uploader_role character varying(255) COLLATE pg_catalog."default",
+    created_at character varying(255) COLLATE pg_catalog."default",
+    file_sftp_id character varying(255) COLLATE pg_catalog."default",
+    CONSTRAINT ticket_technical_support_file_pkey PRIMARY KEY (ticket_technical_support_file_id)
+);
+END;
+
+-- END LAST PROD 29/OCT/23
