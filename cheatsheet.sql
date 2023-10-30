@@ -80,13 +80,13 @@ CREATE TABLE wfm_schema.tm_user_mobile_role
     name varchar(255),
     description varchar(255),
     created_by varchar(255),
-    created_at timestamp without time zone,
+    created_at TIMESTAMP WITHOUT TIME ZONE,
     modified_by varchar(255),
-    modified_at timestamp without time zone,
+    modified_at TIMESTAMP WITHOUT TIME ZONE,
     deleted_by varchar(255),
-    deleted_at timestamp without time zone,
-    is_active boolean,
-    is_delete boolean
+    deleted_at TIMESTAMP WITHOUT TIME ZONE,
+    is_active BOOLEAN,
+    is_delete BOOLEAN
 )
 
 ----------UP PROD 24/10/2023-----------------
@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS wfm_schema.bps_exportpdf_form
     responsibility_name2 VARCHAR(255),
     responsibility_job_title2 VARCHAR(255),
     created_by bigint,
-    created_at timestamp without time zone,
+    created_at TIMESTAMP WITHOUT TIME ZONE,
     modified_by bigint,
     modified_at time without time zone
 )
@@ -131,16 +131,16 @@ CREATE TABLE IF NOT EXISTS wfm_schema.bps_monitoring
     root_category3 VARCHAR(255),
     resolution_action VARCHAR(255),
     user_submiter VARCHAR(255),
-    preparation_time timestamp without time zone,
-    approve_time timestamp without time zone,
-    request_time timestamp without time zone,
-    ack_time timestamp without time zone,
-    departure_time timestamp without time zone,
-    arrival_time timestamp without time zone,
-    cancel_time timestamp without time zone,
-    rh_stop_time timestamp without time zone,
-    leave_time timestamp without time zone,
-    submit_time timestamp without time zone,
+    preparation_time TIMESTAMP WITHOUT TIME ZONE,
+    approve_time TIMESTAMP WITHOUT TIME ZONE,
+    request_time TIMESTAMP WITHOUT TIME ZONE,
+    ack_time TIMESTAMP WITHOUT TIME ZONE,
+    departure_time TIMESTAMP WITHOUT TIME ZONE,
+    arrival_time TIMESTAMP WITHOUT TIME ZONE,
+    cancel_time TIMESTAMP WITHOUT TIME ZONE,
+    rh_stop_time TIMESTAMP WITHOUT TIME ZONE,
+    leave_time TIMESTAMP WITHOUT TIME ZONE,
+    submit_time TIMESTAMP WITHOUT TIME ZONE,
     user_approver VARCHAR(255),
     running_hour_start_photo VARCHAR(50),
     running_hour_stop_photo VARCHAR(50),
@@ -151,16 +151,16 @@ CREATE TABLE IF NOT EXISTS wfm_schema.bps_monitoring
     btsphoto_before VARCHAR(50),
     btsphoto_after VARCHAR(50),
     created_by bigint,
-    created_at timestamp without time zone,
+    created_at TIMESTAMP WITHOUT TIME ZONE,
     modified_by bigint,
-    modified_at timestamp without time zone,
-    rh_start_time timestamp without time zone,
+    modified_at TIMESTAMP WITHOUT TIME ZONE,
+    rh_start_time TIMESTAMP WITHOUT TIME ZONE,
     note VARCHAR(255),
-    need_key boolean,
-    kwhmeter boolean,
+    need_key BOOLEAN,
+    kwhmeter BOOLEAN,
     running_hour_start numeric,
     running_hour_stop numeric,
-    assignee_id integer,
+    assignee_id INT,
     note_mobile VARCHAR(255)
 )
 
@@ -173,20 +173,20 @@ CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support
     ticket_subject VARCHAR(50),
     job_details VARCHAR(255),
     job_targets VARCHAR(255),
-    sla_start timestamp without time zone,
-    sla_end timestamp without time zone,
+    sla_start TIMESTAMP WITHOUT TIME ZONE,
+    sla_end TIMESTAMP WITHOUT TIME ZONE,
     sla_range VARCHAR(25),
     created_by bigint,
-    created_at timestamp without time zone,
+    created_at TIMESTAMP WITHOUT TIME ZONE,
     modified_by bigint,
-    modified_at timestamp without time zone,
+    modified_at TIMESTAMP WITHOUT TIME ZONE,
     no_ticket UNIQUE VARCHAR(25),
     activity_name VARCHAR(255),
     role_name VARCHAR(255),
-    respone_time timestamp without time zone,
-    submit_time timestamp without time zone,
+    respone_time TIMESTAMP WITHOUT TIME ZONE,
+    submit_time TIMESTAMP WITHOUT TIME ZONE,
     user_submitter VARCHAR(255),
-    approve_time timestamp without time zone,
+    approve_time TIMESTAMP WITHOUT TIME ZONE,
     user_approve VARCHAR(255),
     note VARCHAR(255),
     review VARCHAR(255),
@@ -206,7 +206,7 @@ CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support
 CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support_file
 (
     ticket_technical_support_file_id SERIAL PRIMARY KEY,
-    ticket_technical_support_id integer,
+    ticket_technical_support_id INT,
     file_name VARCHAR(255),
     file_uploader VARCHAR(255),
     file_uploader_role VARCHAR(255),
@@ -222,61 +222,124 @@ CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support_file
 ---------------END PROD 24/10/23
 
 -- LAST PROD 29/OCT/23
-BEGIN;
-
-
 CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support
 (
-    ticket_technical_support_id integer NOT NULL DEFAULT nextval('wfm_schema.ticket_technical_support_ticket_technical_support_id_seq'::regclass),
-    site_id character varying(25) COLLATE pg_catalog."default",
-    cluster_area character varying(25) COLLATE pg_catalog."default",
-    category character varying(25) COLLATE pg_catalog."default",
-    ticket_subject character varying(50) COLLATE pg_catalog."default",
-    job_details character varying(255) COLLATE pg_catalog."default",
-    job_targets character varying(255) COLLATE pg_catalog."default",
-    sla_start timestamp without time zone,
-    sla_end timestamp without time zone,
-    sla_range character varying(25) COLLATE pg_catalog."default",
+    ticket_technical_support_id INT NOT NULL DEFAULT nextval('wfm_schema.ticket_technical_support_ticket_technical_support_id_seq'::regclass),
+    site_id VARCHAR(25),
+    cluster_area VARCHAR(25),
+    category VARCHAR(25),
+    ticket_subject VARCHAR(50),
+    job_details VARCHAR(255),
+    job_targets VARCHAR(255),
+    sla_start TIMESTAMP WITHOUT TIME ZONE,
+    sla_end TIMESTAMP WITHOUT TIME ZONE,
+    sla_range VARCHAR(25),
     created_by bigint,
-    created_at timestamp without time zone,
+    created_at TIMESTAMP WITHOUT TIME ZONE,
     modified_by bigint,
-    modified_at timestamp without time zone,
-    no_ticket character varying(25) COLLATE pg_catalog."default",
-    activity_name character varying(255) COLLATE pg_catalog."default",
-    role_name character varying(255) COLLATE pg_catalog."default",
-    respone_time timestamp without time zone,
-    submit_time timestamp without time zone,
-    user_submitter character varying(255) COLLATE pg_catalog."default",
-    approve_time timestamp without time zone,
-    user_approve character varying(255) COLLATE pg_catalog."default",
-    note character varying(255) COLLATE pg_catalog."default",
-    review character varying(255) COLLATE pg_catalog."default",
-    status character varying(25) COLLATE pg_catalog."default",
-    rootcause1 character varying(255) COLLATE pg_catalog."default",
-    rootcause2 character varying(255) COLLATE pg_catalog."default",
-    rootcause3 character varying(255) COLLATE pg_catalog."default",
-    rootcause_remark character varying(255) COLLATE pg_catalog."default",
-    resolution_action character varying(255) COLLATE pg_catalog."default",
-    pic_id character varying(255) COLLATE pg_catalog."default",
-    pic_name character varying(255) COLLATE pg_catalog."default",
-    description character varying(255) COLLATE pg_catalog."default",
-    name character varying(255) COLLATE pg_catalog."default",
-    issue_category character varying(255) COLLATE pg_catalog."default",
+    modified_at TIMESTAMP WITHOUT TIME ZONE,
+    no_ticket VARCHAR(25),
+    activity_name VARCHAR(255),
+    role_name VARCHAR(255),
+    respone_time TIMESTAMP WITHOUT TIME ZONE,
+    submit_time TIMESTAMP WITHOUT TIME ZONE,
+    user_submitter VARCHAR(255),
+    approve_time TIMESTAMP WITHOUT TIME ZONE,
+    user_approve VARCHAR(255),
+    note VARCHAR(255),
+    review VARCHAR(255),
+    status VARCHAR(25),
+    rootcause1 VARCHAR(255),
+    rootcause2 VARCHAR(255),
+    rootcause3 VARCHAR(255),
+    rootcause_remark VARCHAR(255),
+    resolution_action VARCHAR(255),
+    pic_id VARCHAR(255),
+    pic_name VARCHAR(255),
+    description VARCHAR(255),
+    name VARCHAR(255),
+    issue_category VARCHAR(255),
     CONSTRAINT ticket_technical_support_pkey PRIMARY KEY (ticket_technical_support_id),
     CONSTRAINT ticket_technical_support_no_ticket_key UNIQUE (no_ticket)
 );
 
 CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support_file
 (
-    ticket_technical_support_file_id integer NOT NULL DEFAULT nextval('wfm_schema.ticket_technical_support_file_ticket_technical_support_file_seq'::regclass),
-    ticket_technical_support_id integer,
-    file_name character varying(255) COLLATE pg_catalog."default",
-    file_uploader character varying(255) COLLATE pg_catalog."default",
-    file_uploader_role character varying(255) COLLATE pg_catalog."default",
-    created_at character varying(255) COLLATE pg_catalog."default",
-    file_sftp_id character varying(255) COLLATE pg_catalog."default",
+    ticket_technical_support_file_id INT NOT NULL DEFAULT nextval('wfm_schema.ticket_technical_support_file_ticket_technical_support_file_seq'::regclass),
+    ticket_technical_support_id INT,
+    file_name VARCHAR(255),
+    file_uploader VARCHAR(255),
+    file_uploader_role VARCHAR(255),
+    created_at VARCHAR(255),
+    file_sftp_id VARCHAR(255),
     CONSTRAINT ticket_technical_support_file_pkey PRIMARY KEY (ticket_technical_support_file_id)
 );
 END;
 
 -- END LAST PROD 29/OCT/23
+
+-- User and role mobile
+
+BEGIN;
+CREATE TABLE IF NOT EXISTS wfm_schema.mapping_user_mobile_role
+(
+    mapping_user_mobile_role_id SERIAL PRIMARY KEY,
+    tx_user_management_id INT,
+    tx_user_mobile_management_id INT,
+    role_id INT,
+    ref_user_id INT,
+    role_name VARCHAR(255),
+    role_code VARCHAR(255),
+    created_by VARCHAR(255),
+    created_at TIMESTAMP WITHOUT TIME ZONE,
+    modified_by VARCHAR(255),
+    modified_at TIMESTAMP WITHOUT TIME ZONE,
+    deleted_by VARCHAR(255),
+    deleted_at TIMESTAMP WITHOUT TIME ZONE,
+    is_active BOOLEAN,
+    is_delete BOOLEAN,
+);
+
+-- JSON Structure local var
+{ 
+    "mapping_user_mobile_role": 
+        {
+        "mapping_user_mobile_role_id" : 1,
+        "tx_user_management" : 1,
+        "tx_user_mobile_management_id" : 1,
+        "role_id" : 1,
+        "ref_user_id" : 1
+        }
+}
+
+CREATE TABLE IF NOT EXISTS wfm_schema.tx_user_mobile_management
+(
+    tx_user_mobile_management_id SERIAL PRIMARY KEY,
+    username VARCHAR(255),
+    email VARCHAR(255),
+    user_password VARCHAR(255),
+    is_organic BOOLEAN,
+    tx_user_management_id INT,
+    role_id INT,
+    ref_user_id INT,
+    partner_id INT,
+    description VARCHAR(255),
+    created_by VARCHAR(255),
+    created_at TIMESTAMP WITHOUT TIME ZONE,
+    modified_by VARCHAR(255),
+    modified_at TIMESTAMP WITHOUT TIME ZONE,
+    deleted_by VARCHAR(255),
+    deleted_at TIMESTAMP WITHOUT TIME ZONE,
+    is_active BOOLEAN,
+    is_delete BOOLEAN,
+    employee_name VARCHAR(255),
+    area_id VARCHAR(5),
+    regional_id VARCHAR(5),
+    ns_id VARCHAR(30),
+    cluster_id INT,
+    deviceid VARCHAR(255),
+    rtp VARCHAR(255),
+);
+END;
+
+-- End user role
