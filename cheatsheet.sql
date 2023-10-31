@@ -343,3 +343,49 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_user_mobile_management
 END;
 
 -- End user role
+
+-- Asset Safe Guard
+CREATE TABLE IF NOT EXISTS wfm_schema.asset_safe_guard
+(
+    asset_safe_guard_id SERIAL PRIMARY KEY,
+    no_ticket VARCHAR(25),
+    site_id VARCHAR(25),
+    nama_penjaga VARCHAR(255),
+    phone_num VARCHAR(25),
+    type_pengamanan_site_id INT,
+    regular_fee INT,
+    total_fee INT,
+    type_payment VARCHAR(25),
+    bank_name VARCHAR(25),
+    bank_account VARCHAR(25),
+    bank_account_name VARCHAR(25),
+    notes VARCHAR(255),
+    created_by BIGINT,
+    created_at timestamp without time zone,
+    modified_by BIGINT,
+    modified_at timestamp without time zone,
+    approve_status VARCHAR(25),
+    approver_name VARCHAR(25),
+    approve_time timestamp without time zone,
+    review VARCHAR(255),
+--    CONSTRAINT asset_safe_guard_pkey PRIMARY KEY (asset_safe_guard_id),
+--    CONSTRAINT asset_safe_guard_no_ticket_key UNIQUE (no_ticket),
+--    CONSTRAINT asset_safe_guard_type_pengamanan_site_id_fkey FOREIGN KEY (type_pengamanan_site_id)
+--        REFERENCES wfm_schema.tm_type_pengamanan_site (tm_type_pengamanan_site_id) MATCH SIMPLE
+--        ON UPDATE NO ACTION
+--        ON DELETE NO ACTION
+)
+
+CREATE TABLE IF NOT EXISTS wfm_schema.asset_safe_guard_file
+(
+    asset_safe_guard_file_id SERIAL PRIMARY KEY,
+    asset_safe_guard INT,
+    file_name VARCHAR(255) COLLATE pg_catalog."default",
+    file_content BYTEA,
+--    CONSTRAINT asset_safe_guard_file_pkey PRIMARY KEY (asset_safe_guard_file_id),
+--    CONSTRAINT asset_safe_guard_file_asset_safe_guard_fkey FOREIGN KEY (asset_safe_guard)
+--        REFERENCES wfm_schema.asset_safe_guard (asset_safe_guard_id) MATCH SIMPLE
+--        ON UPDATE NO ACTION
+--        ON DELETE NO ACTION
+)
+-- End Asset Safe Guard
