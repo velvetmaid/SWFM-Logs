@@ -361,12 +361,12 @@ CREATE TABLE IF NOT EXISTS wfm_schema.asset_safe_guard
     bank_account_name VARCHAR(25),
     notes VARCHAR(255),
     created_by BIGINT,
-    created_at timestamp without time zone,
+    created_at TIMESTAMP WITHOUT TIME ZONE,
     modified_by BIGINT,
-    modified_at timestamp without time zone,
+    modified_at TIMESTAMP WITHOUT TIME ZONE,
     approve_status VARCHAR(25),
     approver_name VARCHAR(25),
-    approve_time timestamp without time zone,
+    approve_time TIMESTAMP WITHOUT TIME ZONE,
     review VARCHAR(255),
 --    CONSTRAINT asset_safe_guard_pkey PRIMARY KEY (asset_safe_guard_id),
 --    CONSTRAINT asset_safe_guard_no_ticket_key UNIQUE (no_ticket),
@@ -380,7 +380,7 @@ CREATE TABLE IF NOT EXISTS wfm_schema.asset_safe_guard_file
 (
     asset_safe_guard_file_id SERIAL PRIMARY KEY,
     asset_safe_guard INT,
-    file_name VARCHAR(255) COLLATE pg_catalog."default",
+    file_name VARCHAR(255),
     file_content BYTEA,
 --    CONSTRAINT asset_safe_guard_file_pkey PRIMARY KEY (asset_safe_guard_file_id),
 --    CONSTRAINT asset_safe_guard_file_asset_safe_guard_fkey FOREIGN KEY (asset_safe_guard)
@@ -389,3 +389,96 @@ CREATE TABLE IF NOT EXISTS wfm_schema.asset_safe_guard_file
 --        ON DELETE NO ACTION
 )
 -- End Asset Safe Guard
+
+
+--#################### Migrasi mobile user ####################--
+BEGIN;
+
+
+CREATE TABLE IF NOT EXISTS wfm_schema.tx_user_management
+(
+    tx_user_management_id SERIAL PRIMARY KEY,
+    username VARCHAR(255),
+    email VARCHAR(255),
+    role_id INT,
+    is_organic BOOLEAN,
+    ref_user_id INT,
+    partner_id INT,
+    description VARCHAR(255),
+    created_by VARCHAR(255),
+    created_at TIMESTAMP WITHOUT TIME ZONE,
+    modified_by VARCHAR(255),
+    modified_at TIMESTAMP WITHOUT TIME ZONE,
+    deleted_by VARCHAR(255),
+    deleted_at TIMESTAMP WITHOUT TIME ZONE,
+    is_active BOOLEAN,
+    is_delete BOOLEAN,
+    employee_name VARCHAR(255),
+    area_id VARCHAR(5),
+    regional_id VARCHAR(5),
+    ns_id VARCHAR(30),
+    cluster_id INT,
+    deviceid VARCHAR(255),
+    rtp VARCHAR(255),
+);
+
+CREATE TABLE IF NOT EXISTS wfm_schema.tx_user_mobile_management
+(
+    tx_user_mobile_management_id SERIAL PRIMARY KEY,
+    username VARCHAR(255),
+    email VARCHAR(255),
+    user_password VARCHAR(255),
+    is_organic BOOLEAN,
+    tx_user_management_id INT,
+    ref_user_id INT,
+    partner_id INT,
+    description VARCHAR(255),
+    created_by VARCHAR(255),
+    created_at TIMESTAMP WITHOUT TIME ZONE,
+    modified_by VARCHAR(255),
+    modified_at TIMESTAMP WITHOUT TIME ZONE,
+    deleted_by VARCHAR(255),
+    deleted_at TIMESTAMP WITHOUT TIME ZONE,
+    is_active BOOLEAN,
+    is_delete BOOLEAN,
+    employee_name VARCHAR(255),
+    area_id VARCHAR(5),
+    regional_id VARCHAR(5),
+    ns_id VARCHAR(30),
+    cluster_id INT,
+    deviceid VARCHAR(255),
+    rtp VARCHAR(255),
+);
+
+CREATE TABLE IF NOT EXISTS wfm_schema.tx_user_role
+(
+    id SERIAL PRIMARY KEY,
+    role_id INT,
+    ref_user_id INT,
+    description VARCHAR(255),
+    created_by VARCHAR(255),
+    created_at TIMESTAMP WITHOUT TIME ZONE,
+    modified_by VARCHAR(255),
+    modified_at TIMESTAMP WITHOUT TIME ZONE,
+    deleted_by VARCHAR(255),
+    deleted_at TIMESTAMP WITHOUT TIME ZONE,
+    is_active BOOLEAN,
+    is_delete BOOLEAN,
+);
+
+CREATE TABLE IF NOT EXISTS wfm_schema.mapping_user_mobile_role
+(
+    mapping_user_mobile_role_id SERIAL PRIMARY KEY,
+    tx_user_mobile_management_id INT,
+    role_id INT,
+    created_by VARCHAR(255),
+    created_at TIMESTAMP WITHOUT TIME ZONE,
+    modified_by VARCHAR(255),
+    modified_at TIMESTAMP WITHOUT TIME ZONE,
+    deleted_by VARCHAR(255),
+    deleted_at TIMESTAMP WITHOUT TIME ZONE,
+    is_active BOOLEAN,
+    is_delete BOOLEAN,
+);
+END;
+--#################### End migration mobile user ####################--
