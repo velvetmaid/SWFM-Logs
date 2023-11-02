@@ -393,8 +393,6 @@ CREATE TABLE IF NOT EXISTS wfm_schema.asset_safe_guard_file
 
 --#################### Migrasi mobile user ####################--
 BEGIN;
-
-
 CREATE TABLE IF NOT EXISTS wfm_schema.tx_user_management
 (
     tx_user_management_id SERIAL PRIMARY KEY,
@@ -431,6 +429,7 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_user_mobile_management
     is_organic BOOLEAN,
     tx_user_management_id INT,
     ref_user_id INT,
+    ref_user_id_before INT,
     partner_id INT,
     description VARCHAR(255),
     created_by VARCHAR(255),
