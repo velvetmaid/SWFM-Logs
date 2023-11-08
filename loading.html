@@ -1,0 +1,55 @@
+<div class="animated-background"></div>
+
+<style>
+  /* animated-background */
+  @keyframes placeHolderShimmer {
+    0% {
+      background-position: -2500px 0;
+    }
+    100% {
+      background-position: 1600px 0;
+    }
+  }
+
+  .animated-background {
+    animation-duration: 10s;
+    animation-fill-mode: forwards;
+    animation-iteration-count: infinite;
+    animation-name: placeHolderShimmer;
+    animation-timing-function: linear;
+    background-color: #f6f7f8;
+    background: linear-gradient(to right, #ffffff 8%, #f0f0f0 21%, #ffffff 35%);
+    /* background-size: 800px 104px; */
+    height: 100%;
+    position: relative;
+    /*  */
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+    position: absolute;
+    z-index: 999;
+    width: 28%;
+    margin-left: 0px;
+  }
+
+  /* Loader */
+  .loader {
+    width: 80px;
+    height: 80px;
+    background: #fff;
+    display: inline-block;
+    border-radius: 50%;
+    box-sizing: border-box;
+    animation: animloader 1s ease-in infinite;
+  }
+
+  @keyframes animloader {
+    0% {
+      transform: scale(0);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 0;
+    }
+  }
+</style>
