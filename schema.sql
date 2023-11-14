@@ -1,39 +1,93 @@
 -- Select User List
-SELECT 
+SELECT
     tx_user_management.username AS username,
     tx_user_management.email AS email,
     tx_user_management.employee_name AS employe_name,
     tm_regional.regional_name AS regional_name,
     tm_cluster.cluster_name AS cluster_name,
     tm_area.area_name AS area_name
-FROM 
+FROM
     tx_user_management
-JOIN 
-    tm_regional ON tx_user_management.regional_id = tm_regional.regional_id
-JOIN 
-    tm_cluster ON tx_user_management.cluster_id = tm_cluster.cluster_id
-JOIN 
-    tm_area ON tx_user_management.area_id = tm_area.area_id;
+    JOIN tm_regional ON tx_user_management.regional_id = tm_regional.regional_id
+    JOIN tm_cluster ON tx_user_management.cluster_id = tm_cluster.cluster_id
+    JOIN tm_area ON tx_user_management.area_id = tm_area.area_id;
 
 -- Select Absent
-select a.absendate, a.userid, b.timein ,c.timeout,d.username, d.area_id, d.regional_id, d.network_service_name,d.cluster_name,d.rtp from wfm_schema.tx_absen a 
-left join 
-(select absendate, userid, min(absentime) timein from wfm_schema.tx_absen where absentype=true group by userid, absendate) b
-on a.userid=b.userid and a.absendate=b.absendate
-left join
-(select absendate, userid, max(absentime) timeout from wfm_schema.tx_absen where absentype=false group by userid, absendate) c
-on a.userid=c.userid and a.absendate=c.absendate
-left join
-(select a.ref_user_id,a.username, a.area_id, a.regional_id, a.ns_id,b.network_service_name,a.cluster_id,c.cluster_name,a.rtp from wfm_schema.tx_user_management a
-left join wfm_schema.tm_network_service b on a.ns_id = b.network_service_id
-left join wfm_schema.tm_cluster c on a.cluster_id = c.cluster_id
-where a.is_active=true) d
-on a.userid= d.ref_user_id
-group by a.absendate, a.userid, b.timein, c.timeout, d.username,d.area_id, d.regional_id, d.network_service_name,d.cluster_name,d.rtp order by a.absendate desc;
+select
+    a.absendate,
+    a.userid,
+    b.timein,
+    c.timeout,
+    d.username,
+    d.area_id,
+    d.regional_id,
+    d.network_service_name,
+    d.cluster_name,
+    d.rtp
+from
+    wfm_schema.tx_absen a
+    left join (
+        select
+            absendate,
+            userid,
+            min(absentime) timein
+        from
+            wfm_schema.tx_absen
+        where
+            absentype = true
+        group by
+            userid,
+            absendate
+    ) b on a.userid = b.userid
+    and a.absendate = b.absendate
+    left join (
+        select
+            absendate,
+            userid,
+            max(absentime) timeout
+        from
+            wfm_schema.tx_absen
+        where
+            absentype = false
+        group by
+            userid,
+            absendate
+    ) c on a.userid = c.userid
+    and a.absendate = c.absendate
+    left join (
+        select
+            a.ref_user_id,
+            a.username,
+            a.area_id,
+            a.regional_id,
+            a.ns_id,
+            b.network_service_name,
+            a.cluster_id,
+            c.cluster_name,
+            a.rtp
+        from
+            wfm_schema.tx_user_management a
+            left join wfm_schema.tm_network_service b on a.ns_id = b.network_service_id
+            left join wfm_schema.tm_cluster c on a.cluster_id = c.cluster_id
+        where
+            a.is_active = true
+    ) d on a.userid = d.ref_user_id
+group by
+    a.absendate,
+    a.userid,
+    b.timein,
+    c.timeout,
+    d.username,
+    d.area_id,
+    d.regional_id,
+    d.network_service_name,
+    d.cluster_name,
+    d.rtp
+order by
+    a.absendate desc;
 
 -- Create user mobile management
-CREATE TABLE wfm_schema.tx_user_mobile_management
-(
+CREATE TABLE wfm_schema.tx_user_mobile_management (
     tx_user_mobile_management_id SERIAL PRIMARY KEY,
     username VARCHAR(255),
     email VARCHAR(255),
@@ -59,9 +113,7 @@ CREATE TABLE wfm_schema.tx_user_mobile_management
     cluster_id INT,
     deviceid VARCHAR(255),
     rtp VARCHAR(255)
-)
-
--- Create mapping_user_mobile_role unused
+) -- Create mapping_user_mobile_role unused
 CREATE TABLE wfm_schema.mapping_user_mobile_role (
     mapping_user_mobile_role_id SERIAL PRIMARY KEY,
     tx_user_management_id INT,
@@ -70,11 +122,8 @@ CREATE TABLE wfm_schema.mapping_user_mobile_role (
     ref_user_id INT,
     role_name VARCHAR(255),
     role_code VARCHAR(255)
-)
-
--- Create mapping_user_mobile_role
-CREATE TABLE wfm_schema.tm_user_mobile_role
-(
+) -- Create mapping_user_mobile_role
+CREATE TABLE wfm_schema.tm_user_mobile_role (
     tm_user_mobile_role_id SERIAL PRIMARY KEY,
     code varchar(50),
     name varchar(255),
@@ -87,11 +136,8 @@ CREATE TABLE wfm_schema.tm_user_mobile_role
     deleted_at TIMESTAMP WITHOUT TIME ZONE,
     is_active BOOLEAN,
     is_delete BOOLEAN
-)
-
-----------UP PROD 24/10/2023-----------------
-CREATE TABLE IF NOT EXISTS wfm_schema.bps_exportpdf_form
-(
+) ----------UP PROD 24/10/2023-----------------
+CREATE TABLE IF NOT EXISTS wfm_schema.bps_exportpdf_form (
     bps_exportpdf_form_id SERIAL PRIMARY KEY,
     nama_vendor VARCHAR(255),
     job_title VARCHAR(255),
@@ -103,10 +149,7 @@ CREATE TABLE IF NOT EXISTS wfm_schema.bps_exportpdf_form
     created_at TIMESTAMP WITHOUT TIME ZONE,
     modified_by bigint,
     modified_at time without time zone
-)
-
-CREATE TABLE IF NOT EXISTS wfm_schema.bps_monitoring
-(
+) CREATE TABLE IF NOT EXISTS wfm_schema.bps_monitoring (
     bps_monitoring_id SERIAL PRIMARY KEY,
     no_ticket VARCHAR(255),
     status_ticket VARCHAR(255),
@@ -162,10 +205,7 @@ CREATE TABLE IF NOT EXISTS wfm_schema.bps_monitoring
     running_hour_stop numeric,
     assignee_id INT,
     note_mobile VARCHAR(255)
-)
-
-CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support
-(
+) CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support (
     ticket_technical_support_id SERIAL PRIMARY KEY,
     site_id VARCHAR(25),
     cluster_area VARCHAR(25),
@@ -201,30 +241,24 @@ CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support
     description VARCHAR(255),
     name VARCHAR(255),
     issue_category VARCHAR(255)
-)
-
-CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support_file
-(
+) CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support_file (
     ticket_technical_support_file_id SERIAL PRIMARY KEY,
     ticket_technical_support_id INT,
     file_name VARCHAR(255),
     file_uploader VARCHAR(255),
     file_uploader_role VARCHAR(255),
     created_at VARCHAR(255),
-    file_sftp_id VARCHAR(255)
-    -- CONSTRAINT ticket_technical_support_file_pkey PRIMARY KEY (ticket_technical_support_file_id),
+    file_sftp_id VARCHAR(255) -- CONSTRAINT ticket_technical_support_file_pkey PRIMARY KEY (ticket_technical_support_file_id),
     -- CONSTRAINT ticket_technical_support_file_ticket_technical_support_id_fkey FOREIGN KEY (ticket_technical_support_id)
     -- REFERENCES wfm_schema.ticket_technical_support (ticket_technical_support_id) MATCH SIMPLE
     -- ON UPDATE NO ACTION
     -- ON DELETE NO ACTION
-)
-
----------------END PROD 24/10/23
-
+) ---------------END PROD 24/10/23
 -- LAST PROD 29/OCT/23
-CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support
-(
-    ticket_technical_support_id INT NOT NULL DEFAULT nextval('wfm_schema.ticket_technical_support_ticket_technical_support_id_seq'::regclass),
+CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support (
+    ticket_technical_support_id INT NOT NULL DEFAULT nextval(
+        'wfm_schema.ticket_technical_support_ticket_technical_support_id_seq' :: regclass
+    ),
     site_id VARCHAR(25),
     cluster_area VARCHAR(25),
     category VARCHAR(25),
@@ -263,9 +297,10 @@ CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support
     CONSTRAINT ticket_technical_support_no_ticket_key UNIQUE (no_ticket)
 );
 
-CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support_file
-(
-    ticket_technical_support_file_id INT NOT NULL DEFAULT nextval('wfm_schema.ticket_technical_support_file_ticket_technical_support_file_seq'::regclass),
+CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support_file (
+    ticket_technical_support_file_id INT NOT NULL DEFAULT nextval(
+        'wfm_schema.ticket_technical_support_file_ticket_technical_support_file_seq' :: regclass
+    ),
     ticket_technical_support_id INT,
     file_name VARCHAR(255),
     file_uploader VARCHAR(255),
@@ -274,15 +309,14 @@ CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support_file
     file_sftp_id VARCHAR(255),
     CONSTRAINT ticket_technical_support_file_pkey PRIMARY KEY (ticket_technical_support_file_id)
 );
+
 END;
 
 -- END LAST PROD 29/OCT/23
-
 -- User and role mobile
-
 BEGIN;
-CREATE TABLE IF NOT EXISTS wfm_schema.mapping_user_mobile_role
-(
+
+CREATE TABLE IF NOT EXISTS wfm_schema.mapping_user_mobile_role (
     mapping_user_mobile_role_id SERIAL PRIMARY KEY,
     tx_user_management_id INT,
     tx_user_mobile_management_id INT,
@@ -301,19 +335,11 @@ CREATE TABLE IF NOT EXISTS wfm_schema.mapping_user_mobile_role
 );
 
 -- JSON Structure local var
-{ 
-    "mapping_user_mobile_role": 
-        {
-        "mapping_user_mobile_role_id" : 1,
-        "tx_user_management" : 1,
-        "tx_user_mobile_management_id" : 1,
-        "role_id" : 1,
-        "ref_user_id" : 1
-        }
-}
-
-CREATE TABLE IF NOT EXISTS wfm_schema.tx_user_mobile_management
-(
+{ "mapping_user_mobile_role": { "mapping_user_mobile_role_id": 1,
+"tx_user_management": 1,
+"tx_user_mobile_management_id": 1,
+"role_id": 1,
+"ref_user_id": 1 } } CREATE TABLE IF NOT EXISTS wfm_schema.tx_user_mobile_management (
     tx_user_mobile_management_id SERIAL PRIMARY KEY,
     username VARCHAR(255),
     email VARCHAR(255),
@@ -340,13 +366,12 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_user_mobile_management
     deviceid VARCHAR(255),
     rtp VARCHAR(255),
 );
+
 END;
 
 -- End user role
-
 -- Asset Safe Guard
-CREATE TABLE IF NOT EXISTS wfm_schema.asset_safe_guard
-(
+CREATE TABLE IF NOT EXISTS wfm_schema.asset_safe_guard (
     asset_safe_guard_id SERIAL PRIMARY KEY,
     no_ticket VARCHAR(25),
     site_id VARCHAR(25),
@@ -368,33 +393,27 @@ CREATE TABLE IF NOT EXISTS wfm_schema.asset_safe_guard
     approver_name VARCHAR(25),
     approve_time TIMESTAMP WITHOUT TIME ZONE,
     review VARCHAR(255),
---    CONSTRAINT asset_safe_guard_pkey PRIMARY KEY (asset_safe_guard_id),
---    CONSTRAINT asset_safe_guard_no_ticket_key UNIQUE (no_ticket),
---    CONSTRAINT asset_safe_guard_type_pengamanan_site_id_fkey FOREIGN KEY (type_pengamanan_site_id)
---        REFERENCES wfm_schema.tm_type_pengamanan_site (tm_type_pengamanan_site_id) MATCH SIMPLE
---        ON UPDATE NO ACTION
---        ON DELETE NO ACTION
-)
-
-CREATE TABLE IF NOT EXISTS wfm_schema.asset_safe_guard_file
-(
+    --    CONSTRAINT asset_safe_guard_pkey PRIMARY KEY (asset_safe_guard_id),
+    --    CONSTRAINT asset_safe_guard_no_ticket_key UNIQUE (no_ticket),
+    --    CONSTRAINT asset_safe_guard_type_pengamanan_site_id_fkey FOREIGN KEY (type_pengamanan_site_id)
+    --        REFERENCES wfm_schema.tm_type_pengamanan_site (tm_type_pengamanan_site_id) MATCH SIMPLE
+    --        ON UPDATE NO ACTION
+    --        ON DELETE NO ACTION
+) CREATE TABLE IF NOT EXISTS wfm_schema.asset_safe_guard_file (
     asset_safe_guard_file_id SERIAL PRIMARY KEY,
     asset_safe_guard INT,
     file_name VARCHAR(255),
     file_content BYTEA,
---    CONSTRAINT asset_safe_guard_file_pkey PRIMARY KEY (asset_safe_guard_file_id),
---    CONSTRAINT asset_safe_guard_file_asset_safe_guard_fkey FOREIGN KEY (asset_safe_guard)
---        REFERENCES wfm_schema.asset_safe_guard (asset_safe_guard_id) MATCH SIMPLE
---        ON UPDATE NO ACTION
---        ON DELETE NO ACTION
-)
--- End Asset Safe Guard
-
-
+    --    CONSTRAINT asset_safe_guard_file_pkey PRIMARY KEY (asset_safe_guard_file_id),
+    --    CONSTRAINT asset_safe_guard_file_asset_safe_guard_fkey FOREIGN KEY (asset_safe_guard)
+    --        REFERENCES wfm_schema.asset_safe_guard (asset_safe_guard_id) MATCH SIMPLE
+    --        ON UPDATE NO ACTION
+    --        ON DELETE NO ACTION
+) -- End Asset Safe Guard
 --#################### Migrasi mobile user ####################--
 BEGIN;
-CREATE TABLE IF NOT EXISTS wfm_schema.tx_user_management
-(
+
+CREATE TABLE IF NOT EXISTS wfm_schema.tx_user_management (
     tx_user_management_id SERIAL PRIMARY KEY,
     username VARCHAR(255),
     email VARCHAR(255),
@@ -420,8 +439,7 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_user_management
     rtp VARCHAR(255),
 );
 
-CREATE TABLE IF NOT EXISTS wfm_schema.tx_user_mobile_management
-(
+CREATE TABLE IF NOT EXISTS wfm_schema.tx_user_mobile_management (
     tx_user_mobile_management_id SERIAL PRIMARY KEY,
     username VARCHAR(255),
     email VARCHAR(255),
@@ -432,6 +450,8 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_user_mobile_management
     ref_user_id_before INT,
     partner_id INT,
     description VARCHAR(255),
+    -- New column phone number
+    phone_number VARCHAR(25),
     created_by VARCHAR(255),
     created_at TIMESTAMP WITHOUT TIME ZONE,
     modified_by VARCHAR(255),
@@ -449,8 +469,7 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_user_mobile_management
     rtp VARCHAR(255),
 );
 
-CREATE TABLE IF NOT EXISTS wfm_schema.tx_user_role
-(
+CREATE TABLE IF NOT EXISTS wfm_schema.tx_user_role (
     id SERIAL PRIMARY KEY,
     role_id INT,
     ref_user_id INT,
@@ -465,8 +484,7 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_user_role
     is_delete BOOLEAN,
 );
 
-CREATE TABLE IF NOT EXISTS wfm_schema.mapping_user_mobile_role
-(
+CREATE TABLE IF NOT EXISTS wfm_schema.mapping_user_mobile_role (
     mapping_user_mobile_role_id SERIAL PRIMARY KEY,
     tx_user_mobile_management_id INT,
     role_id INT,
@@ -479,5 +497,7 @@ CREATE TABLE IF NOT EXISTS wfm_schema.mapping_user_mobile_role
     is_active BOOLEAN,
     is_delete BOOLEAN,
 );
+
 END;
+
 --#################### End migration mobile user ####################--
