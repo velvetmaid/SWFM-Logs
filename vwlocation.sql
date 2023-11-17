@@ -1010,6 +1010,8 @@ SELECT
       tm_cluster.cluster_id,
       tm_cluster.cluster_name,
       string_agg(DISTINCT tm_user_role.name, ', ') AS role_name,
+      tm_user_role.is_active,
+      tm_user_role.is_delete,
       CASE
         WHEN EXISTS (
           SELECT
@@ -1090,9 +1092,15 @@ SELECT
       INNER JOIN (
         SELECT
           tm_user_role.tm_user_role_id,
-          tm_user_role.name
+          tm_user_role.name,
+          tm_user_role.code,
+          tm_user_role.is_active,
+          tm_user_role.is_delete
         FROM
           wfm_schema.tm_user_role
+        WHERE
+          tm_user_role.code = 'MUSERTS'
+          OR tm_user_role.code = 'MUSERMBP'
       ) tm_user_role ON mapping_user_mobile_role.role_id = tm_user_role.tm_user_role_id -- ##
     WHERE
       ranked_absen.rank_amount < 2
@@ -1114,4 +1122,6 @@ SELECT
       tm_network_service.network_service_id,
       tm_network_service.network_service_name,
       tm_cluster.cluster_id,
-      tm_cluster.cluster_name
+      tm_cluster.cluster_name,
+      tm_user_role.is_active,
+      tm_user_role.is_delete
