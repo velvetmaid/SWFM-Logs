@@ -441,5 +441,54 @@ group by
     d.cluster_name,
     d.rtp
 order by
-    a.absendate desc 
-    -- End absent list mobile
+    a.absendate desc;
+
+-- End absent list mobile
+
+-- CHECK IN PROGRESS STATUS TICKET
+    SELECT
+        *
+    FROM
+        (
+            SELECT
+                tx_ticket_terr_opr.ticket_no,
+                tx_ticket_terr_opr.inap_ticket_no,
+                tx_ticket_terr_opr.site_name,
+                tx_ticket_terr_opr.networkservice,
+                tx_ticket_terr_opr.site_id,
+                tx_ticket_terr_opr.status
+            FROM
+                (
+                    (
+                        (
+                            (
+                                (
+                                    wfm_schema.tx_ticket_terr_opr tx_ticket_terr_opr
+                                    INNER JOIN wfm_schema.tx_site tx_site ON (
+                                        tx_ticket_terr_opr.site_id = tx_site.site_id
+                                    )
+                                )
+                                INNER JOIN wfm_schema.tm_cluster tm_cluster ON (
+                                    tx_site.cluster_id = tm_cluster.cluster_id
+                                )
+                            )
+                            INNER JOIN wfm_schema.tm_network_service tm_network_service ON (
+                                tm_cluster.ns_id = tm_network_service.network_service_id
+                            )
+                        )
+                        INNER JOIN wfm_schema.tm_regional tm_regional ON (
+                            tm_network_service.regional_id = tm_regional.regional_id
+                        )
+                    )
+                    INNER JOIN wfm_schema.tm_area tm_area ON (
+                        tm_regional.area_id = tm_area.area_id
+                    )
+                )
+            WHERE
+                (tx_site.is_active = (cast(1 as boolean)))
+                AND (tx_site.is_delete = (cast(0 as boolean)))
+                AND (tx_ticket_terr_opr.ticket_no = 'BPS-2023-000000100182')
+                -- AND (tm_cluster.ns_id IS NULL)
+                -- AND (tm_regional.area_id IS NULL)
+                -- AND (tx_site.cluster_id IS NULL)
+        ) as result
