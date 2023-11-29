@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="wrapper slide-up">
+        <div class="pin">
+            pin
+        </div>
+    </div>
+    <button onclick="bottomToTop()">test</button>
+
+    <div class="con">
+      <div class="flex-wrap">asd</div>
+      <div class="flex-wrap">asd</div>
+      <div class="flex-wrap">asd</div>
+    </div>
+    <style>
+      .con {
+        display: flex;
+        flex-wrap: wrap;
+      }
+      .flex-wrap {
+        width: 50%;
+      }
+      .pin {
+        background-color: black;
+      }
+      .wrapper {
+        -moz-transition: all 1s ease;
+        -ms-transition: all 1s ease;
+        -o-transition: all 1s ease;
+        -webkit-transition: all 1s ease;
+        border-top-left-radius: 30px;
+        border-top-right-radius: 30px;
+        height: 60%;
+        left: 0;
+        position: fixed;
+        transition: all 1s ease;
+        background: red;
+        width: 100%;
+        z-index: 100;
+      }
+
+      .wrapper.slide-up {
+        top: calc(100% - 24px);
+
+      }
+      .wrapper.slide-down {
+        top: 40%;
+      }
+    </style>
+    <script>
+      let wrapper = document.querySelector(".wrapper");
+      let pin = document.querySelector(".pin");
+
+      function bottomToTop() {
+        if (wrapper.classList.contains("slide-up")) {
+          wrapper.classList.add("slide-down");
+          wrapper.classList.remove("slide-up");
+        } else {
+          wrapper.classList.remove("slide-down");
+          wrapper.classList.add("slide-up");
+        }
+        console.log("test");
+      }
+
+      pin.addEventListener("click", function () {
+        if (wrapper.classList.contains("slide-up")) {
+          wrapper.classList.add("slide-down");
+          wrapper.classList.remove("slide-up");
+        } else {
+          wrapper.classList.remove("slide-down");
+          wrapper.classList.add("slide-up");
+        }
+      });
+    </script>
+  </body>
+</html>
