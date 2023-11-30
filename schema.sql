@@ -293,6 +293,7 @@ CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support (
     description VARCHAR(255),
     name VARCHAR(255),
     issue_category VARCHAR(255),
+    is_asset_change BOOLEAN,
     CONSTRAINT ticket_technical_support_pkey PRIMARY KEY (ticket_technical_support_id),
     CONSTRAINT ticket_technical_support_no_ticket_key UNIQUE (no_ticket)
 );
@@ -501,3 +502,86 @@ CREATE TABLE IF NOT EXISTS wfm_schema.mapping_user_mobile_role (
 END;
 
 --#################### End migration mobile user ####################--
+-- 
+-- NEW  CGL Imbas Petir --
+CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl (
+    tx_cgl_id SERIAL PRIMARY KEY,
+    ticket_no VARCHAR(255),
+    status VARCHAR(255),
+    totsl_price DECIMAL(18, 2),
+    name VARCHAR(255),
+    submit_time TIMESTAMP WITHOUT TIME ZONE,
+    tower_height DECIMAL,
+    site_id VARCHAR(255),
+    site_name VARCHAR(255),
+    building_height DECIMAL,
+    incident_date TIMESTAMP WITHOUT TIME ZONE,
+    total_resisdent INT,
+    stw_doc_file BYTEA,
+    evidence_date TIMESTAMP WITHOUT TIME ZONE,
+    bmkg_doc_file BYTEA,
+    spi_number VARCHAR(255),
+    daisy_number VARCHAR(255),
+    nodin_number VARCHAR(255),
+    notes TEXT,
+    cluster_area VARCHAR(255),
+    created_by VARCHAR(255),
+    created_at TIMESTAMP WITHOUT TIME ZONE,
+    modified_by VARCHAR(255),
+    modified_at TIMESTAMP WITHOUT TIME ZONE
+);
+
+CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_catalogue_brand (
+    tx_cgl_catalogue_brand_id SERIAL PRIMARY KEY,
+    brand_name VARCHAR(255),
+    brand_code VARCHAR(255),
+    created_by VARCHAR(255),
+    created_at TIMESTAMP WITHOUT TIME ZONE,
+    modified_by VARCHAR(255),
+    modified_at TIMESTAMP WITHOUT TIME ZONE
+);
+
+CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_catalogue_brand_item (
+    tx_cgl_catalogue_brand_item_id SERIAL PRIMARY KEY,
+    item_code VARCHAR(255),
+    item_name VARCHAR(255),
+    created_by VARCHAR(255),
+    created_at TIMESTAMP WITHOUT TIME ZONE,
+    modified_by VARCHAR(255),
+    modified_at TIMESTAMP WITHOUT TIME ZONE
+);
+
+CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_catalogue_brand_type (
+    tx_cgl_catalogue_brand_type_id SERIAL PRIMARY KEY,
+    type_code VARCHAR(255),
+    type_name VARCHAR(255),
+    created_by VARCHAR(255),
+    created_at TIMESTAMP WITHOUT TIME ZONE,
+    modified_by VARCHAR(255),
+    modified_at TIMESTAMP WITHOUT TIME ZONE
+);
+
+CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_catalogue_brand_size (
+    tx_cgl_catalogue_brand_size_id SERIAL PRIMARY KEY,
+    size_code VARCHAR(255),
+    size_name VARCHAR(255),
+    created_by VARCHAR(255),
+    created_at TIMESTAMP WITHOUT TIME ZONE,
+    modified_by VARCHAR(255),
+    modified_at TIMESTAMP WITHOUT TIME ZONE
+);
+
+CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_mobile (
+    tx_cgl_mobile_id SERIAL PRIMARY KEY,
+    ticket_no VARCHAR(255),
+    site_id VARCHAR(255),
+    tower_height DECIMAL,
+    building_height DECIMAL,
+    catatan TEXT,
+    cluster_area VARCHAR(255),
+    incident_date TIMESTAMP WITHOUT TIME ZONE,
+    created_by VARCHAR(255),
+    created_at TIMESTAMP WITHOUT TIME ZONE,
+    modified_by VARCHAR(255),
+    modified_at TIMESTAMP WITHOUT TIME ZONE
+)
