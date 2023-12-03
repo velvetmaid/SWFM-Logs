@@ -508,7 +508,7 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl (
     tx_cgl_id SERIAL PRIMARY KEY,
     ticket_no VARCHAR(255),
     status VARCHAR(255),
-    totsl_price DECIMAL(18, 2),
+    total_price DECIMAL(18, 2),
     name VARCHAR(255),
     submit_time TIMESTAMP WITHOUT TIME ZONE,
     tower_height DECIMAL,
@@ -516,20 +516,73 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl (
     site_name VARCHAR(255),
     building_height DECIMAL,
     incident_date TIMESTAMP WITHOUT TIME ZONE,
-    total_resisdent INT,
+    total_resident INT,
+    stw_doc_file_name VARCHAR(255),
     stw_doc_file BYTEA,
     evidence_date TIMESTAMP WITHOUT TIME ZONE,
+    bmkg_doc_file_name VARCHAR(255),
     bmkg_doc_file BYTEA,
     spi_number VARCHAR(255),
     daisy_number VARCHAR(255),
     nodin_number VARCHAR(255),
     notes TEXT,
     cluster_area VARCHAR(255),
+    iscommcase BOOLEAN,
+    keterangan_commcase VARCHAR(255),
     created_by VARCHAR(255),
     created_at TIMESTAMP WITHOUT TIME ZONE,
     modified_by VARCHAR(255),
     modified_at TIMESTAMP WITHOUT TIME ZONE
 );
+
+CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_tower_olo (
+    tx_cgl_olo_id SERIAL PRIMARY KEY,
+    tower_name VARCHAR(255),
+    operator VARCHAR(255),
+    foto_rumah BYTEA
+);
+
+CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_tower_grounding_site (
+    tx_cgl_grounding_site_id SERIAL PRIMARY KEY,
+    label VARCHAR(255),
+    nilai_pengukuran DECIMAL,
+    status_grounding VARCHAR(255),
+    foto_rumah BYTEA
+);
+
+
+CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_residents_data_warga (
+    tx_cgl_residents_data_warga_id SERIAL PRIMARY KEY,
+    report_date TIMESTAMP WITHOUT TIME ZONE,
+    nama_warga VARCHAR(255),
+    no_ktp VARCHAR(255),
+    no_kk VARCHAR(255),
+    alamat TEXT,
+    koordinate_rumah TEXT,
+    jumlah_barang INT,
+    foto_rumah BYTEA,
+    foto_ktp BYTEA,
+    foto_kk BYTEA
+);
+
+CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_residents_barang (
+    tx_cgl_residents_barang_id SERIAL PRIMARY KEY,
+    kode_barang VARCHAR(255),
+    label VARCHAR(255),
+    deskripsi_barang VARCHAR(255),
+    nomor_part VARCHAR(255),
+    nomor_serial VARCHAR(255),
+    foto_barang BYTEA
+)
+
+
+CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_olo (
+    tx_cgl_olo_id SERIAL PRIMARY KEY,
+    tower_name VARCHAR(255),
+    operator VARCHAR(255),
+    foto_rumah BYTEA
+);
+
 
 CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_catalogue_brand (
     tx_cgl_catalogue_brand_id SERIAL PRIMARY KEY,
@@ -571,17 +624,17 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_catalogue_brand_size (
     modified_at TIMESTAMP WITHOUT TIME ZONE
 );
 
-CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_mobile (
-    tx_cgl_mobile_id SERIAL PRIMARY KEY,
-    ticket_no VARCHAR(255),
-    site_id VARCHAR(255),
-    tower_height DECIMAL,
-    building_height DECIMAL,
-    catatan TEXT,
-    cluster_area VARCHAR(255),
-    incident_date TIMESTAMP WITHOUT TIME ZONE,
-    created_by VARCHAR(255),
-    created_at TIMESTAMP WITHOUT TIME ZONE,
-    modified_by VARCHAR(255),
-    modified_at TIMESTAMP WITHOUT TIME ZONE
-)
+-- CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_mobile (
+--     tx_cgl_mobile_id SERIAL PRIMARY KEY,
+--     ticket_no VARCHAR(255),
+--     site_id VARCHAR(255),
+--     tower_height DECIMAL,
+--     building_height DECIMAL,
+--     catatan TEXT,
+--     cluster_area VARCHAR(255),
+--     incident_date TIMESTAMP WITHOUT TIME ZONE,
+--     created_by VARCHAR(255),
+--     created_at TIMESTAMP WITHOUT TIME ZONE,
+--     modified_by VARCHAR(255),
+--     modified_at TIMESTAMP WITHOUT TIME ZONE
+-- )
