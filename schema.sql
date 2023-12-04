@@ -508,7 +508,7 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl (
     tx_cgl_id SERIAL PRIMARY KEY,
     ticket_no VARCHAR(255),
     status VARCHAR(255),
-    total_price DECIMAL(18, 2),
+    total_price DECIMAL,
     name VARCHAR(255),
     submit_time TIMESTAMP WITHOUT TIME ZONE,
     tower_height DECIMAL,
@@ -537,6 +537,7 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl (
 
 CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_tower_olo (
     tx_cgl_olo_id SERIAL PRIMARY KEY,
+    ticket_no VARCHAR(255),
     tower_name VARCHAR(255),
     operator VARCHAR(255),
     foto_rumah BYTEA
@@ -544,6 +545,7 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_tower_olo (
 
 CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_tower_grounding_site (
     tx_cgl_grounding_site_id SERIAL PRIMARY KEY,
+    ticket_no VARCHAR(255),
     label VARCHAR(255),
     nilai_pengukuran DECIMAL,
     status_grounding VARCHAR(255),
@@ -553,6 +555,7 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_tower_grounding_site (
 
 CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_residents_data_warga (
     tx_cgl_residents_data_warga_id SERIAL PRIMARY KEY,
+    ticket_no VARCHAR(255),
     report_date TIMESTAMP WITHOUT TIME ZONE,
     nama_warga VARCHAR(255),
     no_ktp VARCHAR(255),
@@ -567,21 +570,23 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_residents_data_warga (
 
 CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_residents_barang (
     tx_cgl_residents_barang_id SERIAL PRIMARY KEY,
+    ticket_no VARCHAR(255),
     kode_barang VARCHAR(255),
     label VARCHAR(255),
     deskripsi_barang VARCHAR(255),
     nomor_part VARCHAR(255),
     nomor_serial VARCHAR(255),
     foto_barang BYTEA
-)
-
-
-CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_olo (
-    tx_cgl_olo_id SERIAL PRIMARY KEY,
-    tower_name VARCHAR(255),
-    operator VARCHAR(255),
-    foto_rumah BYTEA
 );
+
+
+-- CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_olo (
+--     tx_cgl_olo_id SERIAL PRIMARY KEY,
+--     ticket_no VARCHAR(255),
+--     tower_name VARCHAR(255),
+--     operator VARCHAR(255),
+--     foto_rumah BYTEA
+-- );
 
 
 CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_catalogue_brand (
