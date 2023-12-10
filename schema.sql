@@ -695,3 +695,22 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_catalogue_brand_size (
 --     modified_by VARCHAR(255),
 --     modified_at TIMESTAMP WITHOUT TIME ZONE
 -- )
+
+
+-- 
+-- TOWER INFO
+-- 
+CREATE TABLE tm_tower_info (
+    tower_info_id SERIAL PRIMARY KEY,
+    site_id VARCHAR(25),
+    tower_type VARCHAR(50),
+    tower_height DECIMAL,
+    land_type VARCHAR(25),
+    building_type VARCHAR(25),
+    building_height DECIMAL,
+    building_space DECIMAL,
+    building_floor DECIMAL,
+    building_spot DECIMAL,
+    systems VARCHAR(25),
+    include_pool VARCHAR(25)
+);
