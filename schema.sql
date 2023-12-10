@@ -517,14 +517,33 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl (
     building_height DECIMAL,
     incident_date TIMESTAMP WITHOUT TIME ZONE,
     total_resident INT,
-    stw_doc_file_name VARCHAR(255),
-    stw_doc_file BYTEA,
+    stw_file_name VARCHAR(255),
+    stw_file BYTEA,
+    stw_file_sftp_id VARCHAR(255),
     evidence_date TIMESTAMP WITHOUT TIME ZONE,
-    bmkg_doc_file_name VARCHAR(255),
-    bmkg_doc_file BYTEA,
+    bmkg_file_name VARCHAR(255),
+    bmkg_file BYTEA,
+    bmkg_file_sftp_id VARCHAR(255),
+    request_user VARCHAR(255),
+    request_date TIMESTAMP WITHOUT TIME ZONE,
+    jumlah_barang_terverifikaksi INT,
     spi_number VARCHAR(255),
+    spi_file_name VARCHAR(255),
+    spi_file BYTEA,
+    spi_file_sftp_id VARCHAR(255)
+    spph_file_name VARCHAR(255),
+    spph_file BYTEA,
+    spph_file_sftp_id VARCHAR(255),
     daisy_number VARCHAR(255),
+    daisy_file_name VARCHAR(255),
+    daisy_file BYTEA,
+    daisy_file_sftp_id VARCHAR(255),
+    sph VARCHAR(255),
+    ba_kesepakatan_negosiasi VARCHAR(255),
     nodin_number VARCHAR(255),
+    nodin_file_name VARCHAR(255),
+    nodin_file BYTEA,
+    nodin_file_sftp_id VARCHAR(255),
     notes TEXT,
     cluster_area VARCHAR(255),
     iscommcase BOOLEAN,
@@ -540,7 +559,8 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_tower_olo (
     ticket_no VARCHAR(255),
     tower_name VARCHAR(255),
     operator VARCHAR(255),
-    foto_rumah BYTEA
+    foto_rumah BYTEA,
+    foto_rumah_sftp_id VARCHAR(255)
 );
 
 CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_tower_grounding_site (
@@ -549,34 +569,66 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_tower_grounding_site (
     label VARCHAR(255),
     nilai_pengukuran DECIMAL,
     status_grounding VARCHAR(255),
-    foto_rumah BYTEA
+    foto_rumah BYTEA,
+    foto_rumah_sftp_id VARCHAR(255)
 );
 
 
 CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_residents_data_warga (
     tx_cgl_residents_data_warga_id SERIAL PRIMARY KEY,
     ticket_no VARCHAR(255),
-    report_date TIMESTAMP WITHOUT TIME ZONE,
     nama_warga VARCHAR(255),
     no_ktp VARCHAR(255),
     no_kk VARCHAR(255),
     alamat TEXT,
     koordinate_rumah TEXT,
+    distance_status VARCHAR(255),
+    distance_to_site_m VARCHAR(255),
+    document_report_file_name VARCHAR(255),
+    document_report_file BYTEA,
+    document_report_file_sftp_id VARCHAR(255),
+    document_ba_investigation_file_name VARCHAR(255),
+    document_ba_investigation_file BYTEA,
+    document_ba_investigation_file_sftp_id VARCHAR(255),
+    report_date TIMESTAMP WITHOUT TIME ZONE,
     jumlah_barang INT,
+    price_estimation DECIMAL,
     foto_rumah BYTEA,
+    foto_rumah_sftp_id VARCHAR(255),
     foto_ktp BYTEA,
-    foto_kk BYTEA
+    foto_ktp_sftp_id VARCHAR(255),
+    foto_kk BYTEA,
+    foto_kk_sftp_id VARCHAR(255)
 );
 
 CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_residents_barang (
     tx_cgl_residents_barang_id SERIAL PRIMARY KEY,
+    tx_cgl_residents_data_warga_id INT,
+    pemilik VARCHAR(255),
     ticket_no VARCHAR(255),
     kode_barang VARCHAR(255),
     label VARCHAR(255),
     deskripsi_barang VARCHAR(255),
     nomor_part VARCHAR(255),
     nomor_serial VARCHAR(255),
-    foto_barang BYTEA
+    foto_barang BYTEA,
+    foto_barang_sftp_id VARCHAR(255),
+    claim_action VARCHAR(255),
+    status VARCHAR(255),
+    qty INT,
+    estimation_price DECIMAL,
+    approved_price DECIMAL,
+    total_price DECIMAL
+);
+
+CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_operational_fee (
+    tx_cgl_operational_fee_id SERIAL PRIMARY KEY,
+    ticket_no VARCHAR(255),
+    item_description VARCHAR(255),
+    qty INT,
+    price DECIMAL,
+    fee DECIMAL,
+    total DECIMAL
 );
 
 
