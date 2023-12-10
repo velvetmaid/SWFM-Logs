@@ -530,8 +530,7 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl (
     spi_number VARCHAR(255),
     spi_file_name VARCHAR(255),
     spi_file BYTEA,
-    spi_file_sftp_id VARCHAR(255)
-    spph_file_name VARCHAR(255),
+    spi_file_sftp_id VARCHAR(255) spph_file_name VARCHAR(255),
     spph_file BYTEA,
     spph_file_sftp_id VARCHAR(255),
     daisy_number VARCHAR(255),
@@ -572,7 +571,6 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_tower_grounding_site (
     foto_rumah BYTEA,
     foto_rumah_sftp_id VARCHAR(255)
 );
-
 
 CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_residents_data_warga (
     tx_cgl_residents_data_warga_id SERIAL PRIMARY KEY,
@@ -631,7 +629,6 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_operational_fee (
     total DECIMAL
 );
 
-
 -- CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_olo (
 --     tx_cgl_olo_id SERIAL PRIMARY KEY,
 --     ticket_no VARCHAR(255),
@@ -639,8 +636,6 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_operational_fee (
 --     operator VARCHAR(255),
 --     foto_rumah BYTEA
 -- );
-
-
 CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_catalogue_brand (
     tx_cgl_catalogue_brand_id SERIAL PRIMARY KEY,
     brand_name VARCHAR(255),
@@ -695,12 +690,10 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_catalogue_brand_size (
 --     modified_by VARCHAR(255),
 --     modified_at TIMESTAMP WITHOUT TIME ZONE
 -- )
-
-
 -- 
 -- TOWER INFO
 -- 
-CREATE TABLE tm_tower_info (
+CREATE TABLE wfm_schema.tm_tower_info (
     tower_info_id SERIAL PRIMARY KEY,
     site_id VARCHAR(25),
     tower_type VARCHAR(50),
@@ -714,3 +707,35 @@ CREATE TABLE tm_tower_info (
     systems VARCHAR(25),
     include_pool VARCHAR(25)
 );
+-- 
+\ COPY wfm_schema.tm_tower_info (
+    site_id,
+    tower_type,
+    tower_height,
+    land_type,
+    building_type,
+    building_height,
+    building_space,
+    building_floor,
+    building_spot,
+    systems,
+    include_pool
+)
+FROM
+    'C:/Users/23358275/Documents/tower_info rmv id.csv' DELIMITER E '\t' CSV HEADER;
+-- 
+\ COPY wfm_schema.tm_tower_info (
+    site_id,
+    tower_type,
+    tower_height,
+    land_type,
+    building_type,
+    building_height,
+    building_space,
+    building_floor,
+    building_spot,
+    systems,
+    include_pool
+)
+FROM
+    'C:/Users/23358275/Documents/tower_info rmv id.csv' DELIMITER ';' CSV HEADER;
