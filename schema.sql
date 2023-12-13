@@ -372,7 +372,7 @@ END;
 
 -- End user role
 -- Asset Safe Guard
-CREATE TABLE IF NOT EXISTS wfm_schema.asset_safe_guard (
+CREATE TABLE IF NOT EXISTS wfm_schema.tx_asset_safe_guard (
     asset_safe_guard_id SERIAL PRIMARY KEY,
     no_ticket VARCHAR(25),
     site_id VARCHAR(25),
@@ -400,16 +400,12 @@ CREATE TABLE IF NOT EXISTS wfm_schema.asset_safe_guard (
     --        REFERENCES wfm_schema.tm_type_pengamanan_site (tm_type_pengamanan_site_id) MATCH SIMPLE
     --        ON UPDATE NO ACTION
     --        ON DELETE NO ACTION
-) CREATE TABLE IF NOT EXISTS wfm_schema.asset_safe_guard_file (
+) CREATE TABLE IF NOT EXISTS wfm_schema.tx_asset_safe_guard_file (
     asset_safe_guard_file_id SERIAL PRIMARY KEY,
     asset_safe_guard INT,
     file_name VARCHAR(255),
     file_content BYTEA,
-    --    CONSTRAINT asset_safe_guard_file_pkey PRIMARY KEY (asset_safe_guard_file_id),
-    --    CONSTRAINT asset_safe_guard_file_asset_safe_guard_fkey FOREIGN KEY (asset_safe_guard)
-    --        REFERENCES wfm_schema.asset_safe_guard (asset_safe_guard_id) MATCH SIMPLE
-    --        ON UPDATE NO ACTION
-    --        ON DELETE NO ACTION
+    file_sftp_id VARCHAR(50)
 ) -- End Asset Safe Guard
 --#################### Migrasi mobile user ####################--
 BEGIN;
@@ -707,6 +703,7 @@ CREATE TABLE wfm_schema.tm_tower_info (
     systems VARCHAR(25),
     include_pool VARCHAR(25)
 );
+
 -- 
 \ COPY wfm_schema.tm_tower_info (
     site_id,
@@ -723,6 +720,7 @@ CREATE TABLE wfm_schema.tm_tower_info (
 )
 FROM
     'C:/Users/23358275/Documents/tower_info rmv id.csv' DELIMITER E '\t' CSV HEADER;
+
 -- 
 \ COPY wfm_schema.tm_tower_info (
     site_id,
@@ -739,3 +737,11 @@ FROM
 )
 FROM
     'C:/Users/23358275/Documents/tower_info rmv id.csv' DELIMITER ';' CSV HEADER;
+
+CREATE TABLE wfm_schema.tm_file_template (
+    tm_file_template_id SERIAL PRIMARY KEY,
+    file_name TEXT,
+    file_binary BYTEA,
+    file_sftp_id VARCHAR(50),
+    file_action VARCHAR(25)
+)
