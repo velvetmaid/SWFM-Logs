@@ -612,7 +612,11 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_residents_barang (
     qty INT,
     estimation_price DECIMAL,
     approved_price DECIMAL,
-    total_price DECIMAL
+    total_price DECIMAL,
+    tm_catalogue_brand_id INT,
+    tm_catalogue_brand_item_id INT,
+    tm_catalogue_brand_type_id INT,
+    tm_catalogue_brand_size_id INT
 );
 
 CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_operational_fee (
@@ -632,8 +636,8 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_operational_fee (
 --     operator VARCHAR(255),
 --     foto_rumah BYTEA
 -- );
-CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_catalogue_brand (
-    tx_cgl_catalogue_brand_id SERIAL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS wfm_schema.tm_catalogue_brand (
+    tm_catalogue_brand_id SERIAL PRIMARY KEY,
     brand_name VARCHAR(255),
     brand_code VARCHAR(255),
     created_by VARCHAR(255),
@@ -642,8 +646,8 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_catalogue_brand (
     modified_at TIMESTAMP WITHOUT TIME ZONE
 );
 
-CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_catalogue_brand_item (
-    tx_cgl_catalogue_brand_item_id SERIAL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS wfm_schema.tm_catalogue_brand_item (
+    tm_catalogue_brand_item_id SERIAL PRIMARY KEY,
     item_code VARCHAR(255),
     item_name VARCHAR(255),
     created_by VARCHAR(255),
@@ -652,8 +656,9 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_catalogue_brand_item (
     modified_at TIMESTAMP WITHOUT TIME ZONE
 );
 
-CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_catalogue_brand_type (
-    tx_cgl_catalogue_brand_type_id SERIAL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS wfm_schema.tm_catalogue_brand_type (
+    tm_catalogue_brand_type_id SERIAL PRIMARY KEY,
+    tm_catalogue_brand_item_id INT,
     type_code VARCHAR(255),
     type_name VARCHAR(255),
     created_by VARCHAR(255),
@@ -662,8 +667,10 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_catalogue_brand_type (
     modified_at TIMESTAMP WITHOUT TIME ZONE
 );
 
-CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl_catalogue_brand_size (
-    tx_cgl_catalogue_brand_size_id SERIAL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS wfm_schema.tm_catalogue_brand_size (
+    tm_catalogue_brand_size_id SERIAL PRIMARY KEY,
+    tm_catalogue_brand_item_id INT,
+    tm_catalogue_brand_type_id INT,
     size_code VARCHAR(255),
     size_name VARCHAR(255),
     created_by VARCHAR(255),
