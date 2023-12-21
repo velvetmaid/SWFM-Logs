@@ -10,6 +10,7 @@ SELECT
     tx_location_device.deviceplatform,
     ranked_absen.rank_amount,
     tx_user_mobile_management.username,
+    tx_user_mobile_management.employee_name,
     tm_area.area_id,
     tm_area.area_name,
     tm_regional.regional_id,
@@ -21,13 +22,17 @@ SELECT
     string_agg(DISTINCT tm_user_role.name, ', ') AS role_name,
     tm_user_role.is_active,
     tm_user_role.is_delete,
-   CASE
+    CASE
         WHEN EXISTS (
-            SELECT 1
-            FROM wfm_schema.tx_ticket_terr_opr
-            WHERE tx_ticket_terr_opr.pic_id = tx_user_mobile_management.tx_user_mobile_management_id::varchar
+            SELECT
+                1
+            FROM
+                wfm_schema.tx_ticket_terr_opr
+            WHERE
+                tx_ticket_terr_opr.pic_id = tx_user_mobile_management.tx_user_mobile_management_id :: varchar
                 AND tx_ticket_terr_opr.status = 'IN PROGRESS'
         ) THEN string_agg(DISTINCT tx_ticket_terr_opr.ticket_no, ', ')
+        ELSE NULL :: varchar
     END AS tx_ticket_terr_opr_ticket_no,
     CASE
         WHEN EXISTS (
@@ -140,6 +145,7 @@ GROUP BY
     tx_location_device.deviceplatform,
     ranked_absen.rank_amount,
     tx_user_mobile_management.username,
+    tx_user_mobile_management.employee_name,
     tm_area.area_id,
     tm_area.area_name,
     tm_regional.regional_id,
@@ -149,4 +155,4 @@ GROUP BY
     tm_cluster.cluster_id,
     tm_cluster.cluster_name,
     tm_user_role.is_active,
-    tm_user_role.is_delete
+    tm_user_role.is_delete;

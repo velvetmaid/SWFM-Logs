@@ -867,7 +867,9 @@ SELECT
       tx_user_mobile_management.area_id,
       tx_user_mobile_management.regional_id,
       tx_user_mobile_management.ns_id,
-      tx_user_mobile_management.cluster_id CREATE
+      tx_user_mobile_management.cluster_id -- 
+      -- 
+      CREATE
       OR REPLACE VIEW wfm_schema.vw_user_mobile_absen_location_a AS
     SELECT
       tx_user_mobile_management.tx_user_mobile_management_id,
@@ -994,7 +996,7 @@ SELECT
       tx_user_mobile_management.tx_user_mobile_management_id,
       ranked_absen.absentype,
       tx_location_device.currenttime,
-      tx_location_device.longitude,
+      tx_location_device.l  ngitude,
       tx_location_device.latitude,
       tx_location_device.deviceudid,
       tx_location_device.deviceplatform,
