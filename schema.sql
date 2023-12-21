@@ -205,7 +205,9 @@ CREATE TABLE IF NOT EXISTS wfm_schema.bps_exportpdf_form (
     running_hour_stop numeric,
     assignee_id INT,
     note_mobile VARCHAR(255)
-) CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support (
+);
+
+CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support (
     ticket_technical_support_id SERIAL PRIMARY KEY,
     site_id VARCHAR(25),
     cluster_area VARCHAR(25),
@@ -241,7 +243,9 @@ CREATE TABLE IF NOT EXISTS wfm_schema.bps_exportpdf_form (
     description VARCHAR(255),
     name VARCHAR(255),
     issue_category VARCHAR(255)
-) CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support_file (
+);
+
+CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support_file (
     ticket_technical_support_file_id SERIAL PRIMARY KEY,
     ticket_technical_support_id INT,
     file_name VARCHAR(255),
@@ -253,7 +257,9 @@ CREATE TABLE IF NOT EXISTS wfm_schema.bps_exportpdf_form (
     -- REFERENCES wfm_schema.ticket_technical_support (ticket_technical_support_id) MATCH SIMPLE
     -- ON UPDATE NO ACTION
     -- ON DELETE NO ACTION
-) ---------------END PROD 24/10/23
+);
+
+---------------END PROD 24/10/23
 -- LAST PROD 29/OCT/23
 CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support (
     ticket_technical_support_id INT NOT NULL DEFAULT nextval(
@@ -513,6 +519,9 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl (
     building_height DECIMAL,
     incident_date TIMESTAMP WITHOUT TIME ZONE,
     total_resident INT,
+    boq_file_name VARCHAR(255),
+    boq_file BYTEA,
+    boq_file_sftp_id VARCHAR(255),
     stw_file_name VARCHAR(255),
     stw_file BYTEA,
     stw_file_sftp_id VARCHAR(255),
@@ -526,15 +535,20 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl (
     spi_number VARCHAR(255),
     spi_file_name VARCHAR(255),
     spi_file BYTEA,
-    spi_file_sftp_id VARCHAR(255) spph_file_name VARCHAR(255),
+    spi_file_sftp_id VARCHAR(255),
+    spph_file_name VARCHAR(255),
     spph_file BYTEA,
     spph_file_sftp_id VARCHAR(255),
     daisy_number VARCHAR(255),
     daisy_file_name VARCHAR(255),
     daisy_file BYTEA,
     daisy_file_sftp_id VARCHAR(255),
-    sph VARCHAR(255),
-    ba_kesepakatan_negosiasi VARCHAR(255),
+    sph_file_name VARCHAR(255),
+    sph_file BYTEA,
+    sph_file_sftp_id VARCHAR(255),
+    ba_kesepakatan_negosiasi_file_name VARCHAR(255),
+    ba_kesepakatan_negosiasi_file BYTEA,
+    ba_kesepakatan_negosiasi_file_sftp_id VARCHAR(255),
     nodin_number VARCHAR(255),
     nodin_file_name VARCHAR(255),
     nodin_file BYTEA,
@@ -542,6 +556,18 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_cgl (
     notes TEXT,
     cluster_area VARCHAR(255),
     iscommcase BOOLEAN,
+    isverify BOOLEAN,
+    verifiy_at TIMESTAMP WITHOUT TIME ZONE,
+    verifiy_by INT,
+    isapprovenop BOOLEAN,
+    approvenop_at TIMESTAMP WITHOUT TIME ZONE,
+    approvenop_by INT,
+    isapprovensmgr BOOLEAN,
+    approvensmgr_at TIMESTAMP WITHOUT TIME ZONE,
+    approvensmgr_by INT,
+    isapprovenosmgr BOOLEAN,
+    approvenosmgr_at TIMESTAMP WITHOUT TIME ZONE,
+    approvenosmgr_by INT,
     keterangan_commcase VARCHAR(255),
     created_by VARCHAR(255),
     created_at TIMESTAMP WITHOUT TIME ZONE,
