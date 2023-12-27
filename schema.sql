@@ -789,9 +789,19 @@ CREATE TABLE wfm_schema.tm_file_template (
     file_action VARCHAR(25)
 );
 
--- ASSET VALIDATION
-CREATE TABLE IF NOT EXISTS wfm_schema.tx_rekap_pln (
-    tx_rekap_pln_id SERIAL PRIMARY KEY,
+-- Recap PLN
+CREATE TABLE IF NOT EXISTS wfm_schema.tx_recap_pln_ticket (
+    tx_ticket_recap_pln_id SERIAL PRIMARY KEY,
+    ticket_no VARCHAR(255),
+    site_id VARCHAR(50),
+    created_by VARCHAR(255),
+    created_at TIMESTAMP WITHOUT TIME ZONE,
+    modified_by VARCHAR(255),
+    modified_at TIMESTAMP WITHOUT TIME ZONE
+);
+
+CREATE TABLE IF NOT EXISTS wfm_schema.tx_recap_pln (
+    tx_recap_pln_id SERIAL PRIMARY KEY,
     ticket_no VARCHAR(255),
     site_id VARCHAR(50),
     asset_terdapat_di_site VARCHAR(50),
@@ -908,6 +918,8 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_rekap_pln (
     foto_arester_kwh_name VARCHAR(255),
     foto_arester_kwh_location VARCHAR(255),
     description VARCHAR(255),
+    start_period_at TIMESTAMP WITHOUT TIME ZONE,
+    end_period_at TIMESTAMP WITHOUT TIME ZONE,
     created_by VARCHAR(255),
     created_at TIMESTAMP WITHOUT TIME ZONE,
     modified_by VARCHAR(255),
@@ -916,4 +928,33 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_rekap_pln (
     deleted_at TIMESTAMP WITHOUT TIME ZONE,
     is_active BOOLEAN,
     is_delete BOOLEAN
+);
+
+CREATE TABLE IF NOT EXISTS wfm_schema.tm_power_pln_pelanggan (
+    tm_power_pln_pelanggan SERIAL PRIMARY KEY,
+    id_pelanggan VARCHAR(50),
+    site_id VARCHAR(25),
+    site_class VARCHAR(255),
+    site_owner VARCHAR(255),
+    area_id VARCHAR(5),
+    regional_id VARCHAR(5),
+    nop_id VARCHAR(30),
+    cluster_id VARCHAR(30),
+    alamat TEXT,
+    koordinat VARCHAR(255),
+    type_Site VARCHAR(255),
+    jenis_inquiry VARCHAR(100),
+    tarif_terpasang VARCHAR(50),
+    daya_terpasang VARCHAR(50),
+    skema_bayar VARCHAR(100),
+    previx VARCHAR(100),
+    wilayah_pln VARCHAR(255),
+    area_pln VARCHAR(255),
+    status_id_pelanggan VARCHAR(100),
+    amr_status VARCHAR(100),
+    asset_holder VARCHAR(100),
+    denom_prepaid VARCHAR(100),
+    status_ttc VARCHAR(100),
+    tp_name VARCHAR(100),
+    tower_type VARCHAR(100)
 );
