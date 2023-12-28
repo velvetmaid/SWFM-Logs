@@ -444,51 +444,99 @@ order by
     a.absendate desc;
 
 -- End absent list mobile
-
 -- CHECK IN PROGRESS STATUS TICKET
-    SELECT
-        *
-    FROM
-        (
-            SELECT
-                tx_ticket_terr_opr.ticket_no,
-                tx_ticket_terr_opr.inap_ticket_no,
-                tx_ticket_terr_opr.site_name,
-                tx_ticket_terr_opr.networkservice,
-                tx_ticket_terr_opr.site_id,
-                tx_ticket_terr_opr.status
-            FROM
+SELECT
+    *
+FROM
+    (
+        SELECT
+            tx_ticket_terr_opr.ticket_no,
+            tx_ticket_terr_opr.inap_ticket_no,
+            tx_ticket_terr_opr.site_name,
+            tx_ticket_terr_opr.networkservice,
+            tx_ticket_terr_opr.site_id,
+            tx_ticket_terr_opr.status,
+            tx_ticket_terr_opr.pic_name
+        FROM
+            (
                 (
                     (
                         (
                             (
-                                (
-                                    wfm_schema.tx_ticket_terr_opr tx_ticket_terr_opr
-                                    INNER JOIN wfm_schema.tx_site tx_site ON (
-                                        tx_ticket_terr_opr.site_id = tx_site.site_id
-                                    )
-                                )
-                                INNER JOIN wfm_schema.tm_cluster tm_cluster ON (
-                                    tx_site.cluster_id = tm_cluster.cluster_id
+                                wfm_schema.tx_ticket_terr_opr tx_ticket_terr_opr
+                                INNER JOIN wfm_schema.tx_site tx_site ON (
+                                    tx_ticket_terr_opr.site_id = tx_site.site_id
                                 )
                             )
-                            INNER JOIN wfm_schema.tm_network_service tm_network_service ON (
-                                tm_cluster.ns_id = tm_network_service.network_service_id
+                            INNER JOIN wfm_schema.tm_cluster tm_cluster ON (
+                                tx_site.cluster_id = tm_cluster.cluster_id
                             )
                         )
-                        INNER JOIN wfm_schema.tm_regional tm_regional ON (
-                            tm_network_service.regional_id = tm_regional.regional_id
+                        INNER JOIN wfm_schema.tm_network_service tm_network_service ON (
+                            tm_cluster.ns_id = tm_network_service.network_service_id
                         )
                     )
-                    INNER JOIN wfm_schema.tm_area tm_area ON (
-                        tm_regional.area_id = tm_area.area_id
+                    INNER JOIN wfm_schema.tm_regional tm_regional ON (
+                        tm_network_service.regional_id = tm_regional.regional_id
                     )
                 )
-            WHERE
-                (tx_site.is_active = (cast(1 as boolean)))
-                AND (tx_site.is_delete = (cast(0 as boolean)))
-                AND (tx_ticket_terr_opr.ticket_no = 'BPS-2023-000000100182')
-                -- AND (tm_cluster.ns_id IS NULL)
-                -- AND (tm_regional.area_id IS NULL)
-                -- AND (tx_site.cluster_id IS NULL)
-        ) as result
+                INNER JOIN wfm_schema.tm_area tm_area ON (
+                    tm_regional.area_id = tm_area.area_id
+                )
+            )
+        WHERE
+            (tx_site.is_active = (cast(1 as boolean)))
+            AND (tx_site.is_delete = (cast(0 as boolean)))
+            AND (
+                tx_ticket_terr_opr.ticket_no = 'BPS-2023-000000100182'
+            ) -- AND (tm_cluster.ns_id IS NULL)
+            -- AND (tm_regional.area_id IS NULL)
+            -- AND (tx_site.cluster_id IS NULL)
+    ) as result;
+
+SELECT
+    a.status,
+    a.id_pel_pln,
+    b.total_tagihan,
+    b.payment_status,
+    c.name,
+    c.site_owner,
+    c.wilayah_pln_id,
+    c.area_pln_id,
+    c.prefix_id,
+    c.status AS status_power,
+    c.idpel AS id_pelanggan,
+    d.siteid AS ioms_site_id,
+    d.name AS ioms_site_name,
+    e.site_id AS wfm_site_id,
+    e.site_name AS wfm_site_name
+FROM
+    ipas_schema.tx_site_recurring_invoice a
+    INNER JOIN ipas_schema.tx_power_invoice b ON a.site_recurring_inovice_id = b.site_recurring_invoice_id
+    INNER JOIN ipas_schema.tm_power c ON c.power_id = a.power_id
+    INNER JOIN ioms_dev_schema.tm_site d ON c.site_id :: BIGINT = d.site_id
+    INNER JOIN wfm_schema.tx_site e ON d.siteid = e.site_id
+LIMIT
+    1000: CREATE
+    OR REPLACE VIEW wfm_schema.vw_power_pln_pelanggan AS
+SELECT
+    a.status,
+    a.id_pel_pln,
+    b.total_tagihan,
+    b.payment_status,
+    c.name,
+    c.site_owner,
+    c.wilayah_pln_id,
+    c.area_pln_id,
+    c.prefix_id,
+    c.status AS status_power,
+    c.idpel AS id_pelanggan,
+    c.site_id AS ipas_site_id,
+    d.site_id AS ioms_site_id,
+    d.siteid AS site_id,
+    d.name AS site_name
+FROM
+    ipas_schema.tx_site_recurring_invoice a
+    INNER JOIN ipas_schema.tx_power_invoice b ON a.site_recurring_inovice_id = b.site_recurring_invoice_id
+    INNER JOIN ipas_schema.tm_power c ON c.power_id = a.power_id
+    INNER JOIN ioms_dev_schema.tm_site d ON c.site_id :: BIGINT = d.site_id
