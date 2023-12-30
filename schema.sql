@@ -932,22 +932,18 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_recap_pln (
 
 CREATE TABLE IF NOT EXISTS wfm_schema.tm_power_pln_pelanggan (
     tm_power_pln_pelanggan SERIAL PRIMARY KEY,
-    id_pelanggan VARCHAR(50),
+    id_pelanggan_nomor VARCHAR(50),
+    id_pelanggan_name VARCHAR(255),
     site_id VARCHAR(25),
-    site_class VARCHAR(255),
-    site_owner VARCHAR(255),
     area_id VARCHAR(5),
     regional_id VARCHAR(5),
     nop_id VARCHAR(30),
     cluster_id VARCHAR(30),
-    alamat TEXT,
-    koordinat VARCHAR(255),
-    type_Site VARCHAR(255),
     jenis_inquiry VARCHAR(100),
     tarif_terpasang VARCHAR(50),
     daya_terpasang VARCHAR(50),
     skema_bayar VARCHAR(100),
-    previx VARCHAR(100),
+    prefix VARCHAR(100),
     wilayah_pln VARCHAR(255),
     area_pln VARCHAR(255),
     status_id_pelanggan VARCHAR(100),
@@ -957,4 +953,29 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tm_power_pln_pelanggan (
     status_ttc VARCHAR(100),
     tp_name VARCHAR(100),
     tower_type VARCHAR(100)
+);
+
+
+-- no	area	regional	nop	siteid	prefix	sitename	alamat	koordinat	towerholder	typepmsite	categorysite	idpelnomor	idpelnama	jenissite	jenisbill	tarif	daya	status
+
+CREATE TABLE IF NOT EXISTS wfm_schema.dummy_pln_pelanggan (
+    id SERIAL PRIMARY KEY,
+    area VARCHAR,
+    regional VARCHAR,
+    nop VARCHAR,
+    siteid VARCHAR,
+    prefix VARCHAR,
+    sitename VARCHAR,
+    alamat VARCHAR,
+    koordinat VARCHAR,
+    towerholder VARCHAR,
+    typepmsite VARCHAR,
+    categorysite VARCHAR,
+    idpelnomor VARCHAR,
+    idpelnama VARCHAR,
+    jenissite VARCHAR,
+    jenisbill VARCHAR,
+    tarif VARCHAR,
+    daya VARCHAR,
+    status VARCHAR
 );
