@@ -539,4 +539,30 @@ FROM
     ipas_schema.tx_site_recurring_invoice a
     INNER JOIN ipas_schema.tx_power_invoice b ON a.site_recurring_inovice_id = b.site_recurring_invoice_id
     INNER JOIN ipas_schema.tm_power c ON c.power_id = a.power_id
-    INNER JOIN ioms_dev_schema.tm_site d ON c.site_id :: BIGINT = d.site_id
+    INNER JOIN ioms_dev_schema.tm_site d ON c.site_id :: BIGINT = d.site_id;
+
+SELECT
+    *
+FROM
+    ipas_schema.tm_power a
+    INNER JOIN ioms_dev_schema.tm_site b ON a.site_id :: BIGINT = b.site_id;
+
+
+SELECT 
+b.idpelnomor as id_pelanggan_nomor,
+b.idpelnomor as id_pelanggan_nomor,
+a.site_id,
+a.area_id,
+a.regional_id,
+a.nop_id,
+a.cluster_id,
+b.jenisbill as jenis_inquiry,
+b.tarif as tarif_terpasang,
+b.daya as daya_terpasang,
+b.prefix,
+b.status as status_id_pelanggan 
+FROM wfm_schema.tx_site a 
+LEFT JOIN wfm_schema.dummy_pln_pelanggan b
+ON a.site_id = b.siteid;
+
+
