@@ -565,4 +565,33 @@ FROM wfm_schema.tx_site a
 LEFT JOIN wfm_schema.dummy_pln_pelanggan b
 ON a.site_id = b.siteid;
 
-
+-- User mobile
+SELECT 
+a.username,
+a.email,
+a.phone_number,
+a.tx_user_management_id,
+a.ref_user_id,
+a.employee_name,
+a.area_id,
+b.area_name,
+a.regional_id,
+c.regional_name,
+a.ns_id,
+d.network_service_name,
+a.nop_id,
+e.nop_name,
+a.cluster_id,
+f.cluster_name,
+a.is_active
+FROM wfm_schema.tx_user_mobile_management a 
+LEFT JOIN wfm_schema.tm_area b 
+ON a.area_id = b.area_id
+LEFT JOIN wfm_schema.tm_regional c
+ON a.regional_id = c.regional_id
+LEFT JOIN wfm_schema.tm_network_service d
+ON a.ns_id = d.network_service_id
+LEFT JOIN wfm_schema.tm_nop e 
+ON a.nop_id = e.nop_id
+LEFT JOIN wfm_schema.tm_cluster f
+ON a.cluster_id = f.cluster_id
