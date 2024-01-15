@@ -153,4 +153,74 @@ GROUP BY
     tx_user_management.ref_user_id,
     tx_user_management.employee_name
 ORDER BY
-    ticket_technical_support.ticket_technical_support_id DESC
+    ticket_technical_support.ticket_technical_support_id DESC;
+
+-- NEW
+CREATE
+OR REPLACE VIEW wfm_schema.vw_ticket_technical_support AS
+SELECT
+    ticket_technical_support.*,
+    string_agg(DISTINCT tm_user_role.name, ', ') AS tm_user_role_name
+FROM
+    wfm_schema.ticket_technical_support
+    INNER JOIN wfm_schema.tx_user_role tx_user_role ON ticket_technical_support.created_by = tx_user_role.ref_user_id
+    INNER JOIN wfm_schema.tm_user_role tm_user_role ON tx_user_role.role_id = tm_user_role.tm_user_role_id
+GROUP BY
+    ticket_technical_support.ticket_technical_support_id;
+
+-- ?
+SELECT
+    tts.ticket_technical_support_id,
+    tts.category,
+    tts.ticket_subject,
+    tts.sla_start,
+    tts.sla_end,
+    tts.created_by,
+    tts.created_at,
+    tts.modified_by,
+    tts.modified_at,
+    tts.no_ticket,
+    tts.activity_name,
+    tts.role_name,
+    tts.respone_time,
+    tts.submit_time,
+    tts.user_submitter,
+    tts.approve_time,
+    tts.user_approve,
+    tts.note,
+    tts.review,
+    tts.status,
+    tts.pic_id,
+    tts.pic_name,
+    tts.description,
+    tts.name,
+    string_agg(DISTINCT tm_user_role.name, ', ') AS tm_user_role_name
+FROM
+    wfm_schema.ticket_technical_support tts
+    LEFT JOIN wfm_schema.tx_user_role tx_user_role ON tts.created_by = tx_user_role.ref_user_id
+    LEFT JOIN wfm_schema.tm_user_role tm_user_role ON tx_user_role.role_id = tm_user_role.tm_user_role_id
+GROUP BY
+    tts.ticket_technical_support_id,
+    tts.category,
+    tts.ticket_subject,
+    tts.sla_start,
+    tts.sla_end,
+    tts.created_by,
+    tts.created_at,
+    tts.modified_by,
+    tts.modified_at,
+    tts.no_ticket,
+    tts.activity_name,
+    tts.role_name,
+    tts.respone_time,
+    tts.submit_time,
+    tts.user_submitter,
+    tts.approve_time,
+    tts.user_approve,
+    tts.note,
+    tts.review,
+    tts.status,
+    tts.pic_id,
+    tts.pic_name,
+    tts.description,
+    tts.name
