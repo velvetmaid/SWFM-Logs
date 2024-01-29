@@ -1,3 +1,4 @@
+-- Personal Tracking
 CREATE
 OR REPLACE VIEW wfm_schema.vw_user_mobile_absent_location AS
 SELECT
@@ -174,3 +175,33 @@ GROUP BY
     tm_cluster.cluster_name,
     tm_user_role.is_active,
     tm_user_role.is_delete;
+
+-- View user svto
+SELECT
+    a.tx_user_management_id,
+    a.username,
+    a.email,
+    a.employee_name,
+    a.created_at,
+    a.modified_at,
+    a.is_active,
+    a.area_id,
+    a.regional_id,
+    regional.regional_name,
+    a.nop_id,
+    nop.nop_name,
+    a.cluster_id,
+    cluster.cluster_name,
+    a.deviceid,
+    c.code,
+    c.name
+FROM
+    wfm_schema.tx_user_management a
+    INNER JOIN wfm_schema.tx_user_role b ON b.ref_user_id = a.ref_user_id
+    INNER JOIN wfm_schema.tm_user_role c ON c.tm_user_role_id = b.role_id
+    INNER JOIN wfm_schema.tm_area area ON a.area_id = area.area_id
+    INNER JOIN wfm_schema.tm_regional regional ON regional.regional_id = a.regional_id
+    INNER JOIN wfm_schema.tm_nop nop ON nop.nop_id = a.nop_id
+    INNER JOIN wfm_schema.tm_cluster cluster ON cluster.cluster_id = a.cluster_id
+WHERE
+    c.code = 'SVTO'
