@@ -104,3 +104,6 @@ SELECT b.tx_user_mobile_management_id, a.role_id, a.created_by, a.created_at, a.
 FROM wfm_schema.tx_user_role a INNER JOIN wfm_schema.tx_user_mobile_management b 
 ON a.ref_user_id = b.ref_user_id_before WHERE b.is_active=true and b.is_delete=false and b.regional_id='R01' and (a.role_id = 17 or a.role_id =13);
 --############## End Prog
+
+
+DELETE FROM wfm_admin_schema.tx_eventlog WHERE process_name = 'PMG' AND date_trunc('day', created_on)::date = '2023-12-31'

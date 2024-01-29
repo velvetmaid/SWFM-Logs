@@ -157,3 +157,13 @@ GROUP BY
 
 ALTER TABLE
     wfm_schema.vw_user_mobile_absent_location OWNER TO postgres;
+
+-- 
+    SELECT * FROM wfm_schema.tx_pm_ticket_site a
+INNER JOIN wfm_schema.tm_partner b ON a.partner_id = b.partner_id 
+INNER JOIN wfm_schema.tx_site c ON a.tx_site_id = c.site_id
+INNER JOIN wfm_schema.tm_type_site d ON d.type_site_id = c.type_site_id
+LEFT JOIN wfm_schema.tx_type_site_period e ON e.period_interval_code = a.maintenance_interval
+WHERE
+      a.schedule_date >= '2024-01-01'
+  AND a.schedule_date <  '2024-01-31'
