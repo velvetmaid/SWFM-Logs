@@ -176,6 +176,24 @@ GROUP BY
     tm_user_role.is_active,
     tm_user_role.is_delete;
 
+-- tx_absen.absentype
+-- tx_absen.userid
+-- tm_area.area_id
+-- tm_regional.regional_id
+-- tm_network_service.network_service_id
+-- tm_nop.nop_id
+-- tm_cluster.cluster_id
+-- tm_user_role.code
+-- tm_user_role.name
+-- tx_location_device_1.deviceudid
+-- tx_location_device_1.currenttime
+-- tx_ticket_terr_opr.status
+-- 
+-- 
+-- 
+-- End Personal Tracking 
+-- 
+-- 
 -- View user svto
 SELECT
     a.tx_user_management_id,
