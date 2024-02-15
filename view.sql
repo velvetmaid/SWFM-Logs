@@ -547,51 +547,65 @@ FROM
     ipas_schema.tm_power a
     INNER JOIN ioms_dev_schema.tm_site b ON a.site_id :: BIGINT = b.site_id;
 
-
-SELECT 
-b.idpelnomor as id_pelanggan_nomor,
-b.idpelnomor as id_pelanggan_nomor,
-a.site_id,
-a.area_id,
-a.regional_id,
-a.nop_id,
-a.cluster_id,
-b.jenisbill as jenis_inquiry,
-b.tarif as tarif_terpasang,
-b.daya as daya_terpasang,
-b.prefix,
-b.status as status_id_pelanggan 
-FROM wfm_schema.tx_site a 
-LEFT JOIN wfm_schema.dummy_pln_pelanggan b
-ON a.site_id = b.siteid;
+SELECT
+    b.idpelnomor as id_pelanggan_nomor,
+    b.idpelnomor as id_pelanggan_nomor,
+    a.site_id,
+    a.area_id,
+    a.regional_id,
+    a.nop_id,
+    a.cluster_id,
+    b.jenisbill as jenis_inquiry,
+    b.tarif as tarif_terpasang,
+    b.daya as daya_terpasang,
+    b.prefix,
+    b.status as status_id_pelanggan
+FROM
+    wfm_schema.tx_site a
+    LEFT JOIN wfm_schema.dummy_pln_pelanggan b ON a.site_id = b.siteid;
 
 -- User mobile
-SELECT 
-a.username,
-a.email,
-a.phone_number,
-a.tx_user_management_id,
-a.ref_user_id,
-a.employee_name,
-a.area_id,
-b.area_name,
-a.regional_id,
-c.regional_name,
-a.ns_id,
-d.network_service_name,
-a.nop_id,
-e.nop_name,
-a.cluster_id,
-f.cluster_name,
-a.is_active
-FROM wfm_schema.tx_user_mobile_management a 
-LEFT JOIN wfm_schema.tm_area b 
-ON a.area_id = b.area_id
-LEFT JOIN wfm_schema.tm_regional c
-ON a.regional_id = c.regional_id
-LEFT JOIN wfm_schema.tm_network_service d
-ON a.ns_id = d.network_service_id
-LEFT JOIN wfm_schema.tm_nop e 
-ON a.nop_id = e.nop_id
-LEFT JOIN wfm_schema.tm_cluster f
-ON a.cluster_id = f.cluster_id
+SELECT
+    a.username,
+    a.email,
+    a.phone_number,
+    a.tx_user_management_id,
+    a.ref_user_id,
+    a.employee_name,
+    a.area_id,
+    b.area_name,
+    a.regional_id,
+    c.regional_name,
+    a.ns_id,
+    d.network_service_name,
+    a.nop_id,
+    e.nop_name,
+    a.cluster_id,
+    f.cluster_name,
+    a.is_active
+FROM
+    wfm_schema.tx_user_mobile_management a
+    LEFT JOIN wfm_schema.tm_area b ON a.area_id = b.area_id
+    LEFT JOIN wfm_schema.tm_regional c ON a.regional_id = c.regional_id
+    LEFT JOIN wfm_schema.tm_network_service d ON a.ns_id = d.network_service_id
+    LEFT JOIN wfm_schema.tm_nop e ON a.nop_id = e.nop_id
+    LEFT JOIN wfm_schema.tm_cluster f ON a.cluster_id = f.cluster_id;
+
+-- VW SITE REGULER WITH WAREHOUSE
+CREATE
+OR REPLACE VIEW wfm_schema.vw_site_reguler_warehouse AS
+SELECT
+    a.site_id,
+    a.site_name,
+    a.site_address,
+    TRUE AS is_site_reguler
+FROM
+    wfm_schema.tx_site a
+UNION
+SELECT
+    b.site_id,
+    b.site_name,
+    b.site_address,
+    FALSE AS is_site_reguler
+FROM
+    wfm_schema.tx_site_warehouse b
