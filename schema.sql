@@ -1085,3 +1085,24 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_sva_asset_lost (
     updated_at TIMESTAMP WITHOUT TIME ZONE,
     updated_by BIGINT
 );
+
+-- ALTER tx_cmsite_header
+ALTER TABLE
+    wfm_schema.tx_cmsite_header
+ADD
+    COLUMN service_level VARCHAR(25);
+
+-- TX SITE WAREHOUSE
+CREATE TABLE IF NOT EXISTS wfm_schema.tx_site_warehouse (
+    site_id VARCHAR(30) PRIMARY KEY NOT NULL,
+    code VARCHAR(30),
+    name VARCHAR(255),
+    active VARCHAR(10),
+    type_name VARCHAR(50),
+    site_name VARCHAR(255),
+    site_address VARCHAR(255),
+    area_id VARCHAR(10),
+    regional_id VARCHAR(10),
+    nop_id VARCHAR(10),
+    cluster_id INT
+);
