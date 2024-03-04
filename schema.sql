@@ -262,7 +262,7 @@ CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support_file (
 ---------------END PROD 24/10/23
 -- LAST PROD 29/OCT/23
 CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support (
-    ticket_technical_support_id INT NOT NULL DEFAULT nextval(
+    ticket_technical_support_id INT nextval(
         'wfm_schema.ticket_technical_support_ticket_technical_support_id_seq' :: regclass
     ),
     site_id VARCHAR(25),
@@ -305,7 +305,7 @@ CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support (
 );
 
 CREATE TABLE IF NOT EXISTS wfm_schema.ticket_technical_support_file (
-    ticket_technical_support_file_id INT NOT NULL DEFAULT nextval(
+    ticket_technical_support_file_id INT nextval(
         'wfm_schema.ticket_technical_support_file_ticket_technical_support_file_seq' :: regclass
     ),
     ticket_technical_support_id INT,
@@ -748,7 +748,7 @@ CREATE TABLE wfm_schema.tm_tower_info (
     include_pool VARCHAR(25)
 );
 
--- 
+-- FROM IPAS
 \ COPY wfm_schema.tm_tower_info (
     site_id,
     tower_type,
@@ -1105,4 +1105,38 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_site_warehouse (
     regional_id VARCHAR(10),
     nop_id VARCHAR(10),
     cluster_id INT
+);
+
+CREATE TABLE IF NOT EXISTS wfm_schema.tx_cmsite_assetrelatedactivity_additional (
+    tx_cmsite_assetrelatedactivity_additional_id SERIAL PRIMARY KEY,
+    tx_cmsite_assetrelated_id BIGINT,
+    attachment_sftp_id VARCHAR(50)
+);
+
+CREATE TABLE IF NOT EXISTS wfm_schema.tx_cmsite_assetrelatedactivity (
+    tx_cmsite_assetrelated_id SERIAL PRIMARY KEY,
+    cmsite_header_id BIGINT,
+    asset_activity_category_id VARCHAR(30),
+    asset_activity_category_name VARCHAR(150),
+    created_by VARCHAR(255),
+    created_at TIMESTAMP WITHOUT TIME ZONE,
+    modified_by VARCHAR(255),
+    modified_at TIMESTAMP WITHOUT TIME ZONE,
+    deleted_by VARCHAR(255),
+    deleted_at TIMESTAMP WITHOUT TIME ZONE,
+    is_active boolean,
+    is_delete boolean,
+    site_as VARCHAR(100),
+    site_id VARCHAR(50),
+    fpbg_sftp_id VARCHAR(50),
+    nodin_sftp_id VARCHAR(50)
+);
+
+CREATE TABLE IF NOT EXISTS wfm_schema.tx_cmsite_assetrelatedactivity_additional (
+    tx_cmsite_assetrelatedactivity_additional_id SERIAL PRIMARY KEY,
+    cmsite_header_id BIGINT,
+    tx_cmsite_assetrelated_id BIGINT,
+    tx_cmsite_category_additional_key VARCHAR(25),
+    attachment_sftp_id VARCHAR(50),
+    attachment_file_name TEXT
 );
