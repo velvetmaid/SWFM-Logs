@@ -1,29 +1,14 @@
-SELECT
-    a.phone_number,
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.' :: text AS message
-FROM
-    wfm_schema.tx_user_management a
-    LEFT JOIN wfm_schema.tx_user_role b ON b.ref_user_id = a.ref_user_id
-    LEFT JOIN wfm_schema.tm_user_role c ON c.tm_user_role_id = b.role_id
-WHERE
-    c.code = 'SVTO'
-GROUP BY
-    a.phone_number;
-
--- ####
--- ####
--- ####
-CREATE
-OR REPLACE VIEW wfm_schema.vw_message_spv_to AS WITH ranked_spv_to AS (
+create
+OR replace view wfm_schema.vw_message_spv_to AS WITH ranked_spv_to AS (
     SELECT
         DISTINCT a.phone_number,
         a.cluster_id,
         d.cluster_name
     FROM
         wfm_schema.tx_user_management a
-        INNER JOIN wfm_schema.tx_user_role b ON b.ref_user_id = a.ref_user_id
-        INNER JOIN wfm_schema.tm_user_role c ON c.tm_user_role_id = b.role_id
-        INNER JOIN wfm_schema.tm_cluster d ON d.cluster_id = a.cluster_id
+        JOIN wfm_schema.tx_user_role b ON b.ref_user_id = a.ref_user_id
+        JOIN wfm_schema.tm_user_role c ON c.tm_user_role_id = b.role_id
+        JOIN wfm_schema.tm_cluster d ON d.cluster_id = a.cluster_id
     WHERE
         a.is_active = true
         AND a.is_delete = false
@@ -105,10 +90,17 @@ ticket_total_count AS (
         count(
             CASE
                 WHEN a.status = 'ASSIGNED'
-                OR a.status = 'SUBMITTED' THEN 1
+                OR a.status = 'SUBMITTED'
+                OR a.status = 'IN PROGRESS' THEN 1
                 ELSE NULL
             END
         ) AS total_all_ticket,
+        count(
+            CASE
+                WHEN a.status = 'IN PROGRESS' THEN 1
+                ELSE NULL
+            END
+        ) AS total_take_over_ticket,
         count(
             CASE
                 WHEN a.status = 'ASSIGNED' THEN 1
@@ -123,7 +115,7 @@ ticket_total_count AS (
         ) AS total_close_ticket
     FROM
         wfm_schema.tx_ticket_terr_opr a
-        INNER JOIN wfm_schema.tx_site b ON a.site_id = b.site_id
+        JOIN wfm_schema.tx_site b ON a.site_id = b.site_id
     WHERE
         a.created_at >= (CURRENT_DATE - '1 day' :: interval)
         AND a.created_at < CURRENT_DATE
@@ -135,30 +127,46 @@ SELECT
     (
         (
             (
-                'TS/MBP Performance Report
-
+                (
+                    (
+                        (
+                            (
+                                (
+                                    (
+                                        (
+                                            (
+                                                (
+                                                    (
+                                                        'TS/MBP Performance Report
 ----------------------------------------
-
-Dear SPV TO, berikut adalah performance TS/MBP ' || ranked_spv_to.cluster_name || ' :' || '
-
-Total Ticket : ' || ticket_total_count.total_all_ticket || '
-
-Total Open : ' || ticket_total_count.total_open_ticket || '
-
-Total Close : ' || ticket_total_count.total_close_ticket
-            )
+Full Day ' || to_char(
+                                                            CURRENT_DATE - '1 day' :: interval,
+                                                            'DD FMMonth YYYY'
+                                                        )
+                                                    ) || '
+Dear SPV TO, berikut adalah performance TS/MBP '
+                                                ) || ranked_spv_to.cluster_name
+                                            ) || ' :'
+                                        ) || '
+Total Ticket : '
+                                    ) || ticket_total_count.total_all_ticket
+                                ) || '
+Total Take Over : '
+                            ) || ticket_total_count.total_take_over_ticket
+                        ) || '
+Total Open : '
+                    ) || ticket_total_count.total_open_ticket
+                ) || '
+Total Close : '
+            ) || ticket_total_count.total_close_ticket
         ) || string_agg(
             format(
                 '
-
 %s. %s / %s / %s / %s / %s',
                 ranked_staff_to.seq_no,
                 ranked_staff_to.staffname,
                 ranked_staff_to.clock_status,
-                COALESCE(
-                    ticket_info.take_over_ticket,
-                    '0'
-                ),
+                COALESCE(ticket_info.take_over_ticket, '0'),
                 COALESCE(ticket_info.open_ticket, '0'),
                 COALESCE(ticket_info.close_ticket, '0')
             ),
@@ -169,26 +177,20 @@ Total Close : ' || ticket_total_count.total_close_ticket
     ) || '
 
 ----------------------------------------
-
 Keterangan
-
 1. [nama], [status clock in], [jumlah tiket takeover h-1], [jumlah tiket open h-1], [jumlah tiket close h-1]' AS message
 FROM
     ranked_spv_to
     LEFT JOIN ranked_staff_to ON ranked_spv_to.cluster_id = ranked_staff_to.cluster_id
     LEFT JOIN ticket_info ON ticket_info.pic_id = ranked_staff_to.tx_user_mobile_management_id :: VARCHAR
-    LEFT JOIN ticket_total_count ON ticket_total_count.cluster_id = ranked_spv_to.cluster_id
+    JOIN ticket_total_count ON ticket_total_count.cluster_id = ranked_spv_to.cluster_id
 GROUP BY
     ranked_spv_to.phone_number,
     ranked_spv_to.cluster_name,
     ticket_total_count.total_all_ticket,
+    ticket_total_count.total_take_over_ticket,
     ticket_total_count.total_open_ticket,
     ticket_total_count.total_close_ticket
 ORDER BY
     ranked_spv_to.phone_number,
     ranked_spv_to.cluster_name;
-
-    -- 
-    -- 
-    -- 
-    
