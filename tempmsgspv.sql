@@ -103,7 +103,7 @@ ticket_info AS (
                 OR tx_ticket_terr_opr.status = 'CANCELED'
                 OR tx_ticket_terr_opr.status = 'ESCALATED TO CTS'
                 OR tx_ticket_terr_opr.status = 'ESCALATED TO INSERA'
-                OR tx_ticket_terr_opr.status = 'IN PROGRESS'
+                -- OR tx_ticket_terr_opr.status = 'IN PROGRESS'
                 OR tx_ticket_terr_opr.status = 'NEW'
                 OR tx_ticket_terr_opr.status = 'RESOLVED'
                 OR tx_ticket_terr_opr.status = 'SUBMITTED' THEN 1
@@ -153,7 +153,7 @@ ticket_total_count AS (
                 OR a.status = 'CANCELED'
                 OR a.status = 'ESCALATED TO CTS'
                 OR a.status = 'ESCALATED TO INSERA'
-                OR a.status = 'IN PROGRESS'
+                -- OR a.status = 'IN PROGRESS'
                 OR a.status = 'NEW'
                 OR a.status = 'RESOLVED'
                 OR a.status = 'SUBMITTED' THEN 1
