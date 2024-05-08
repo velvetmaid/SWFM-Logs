@@ -1,19 +1,9 @@
-CREATE
-OR REPLACE view wfm_schema.vw_message_spv_to_cluster AS WITH ranked_spv_to AS (
+WITH ranked_cluster AS (
     SELECT
-        DISTINCT a.phone_number,
-        d.cluster_id,
-        d.cluster_name
+        a.cluster_id,
+        a.cluster_name
     FROM
-        wfm_schema.tx_user_management a
-        JOIN wfm_schema.tx_user_role b ON b.ref_user_id = a.ref_user_id
-        JOIN wfm_schema.tm_user_role c ON c.tm_user_role_id = b.role_id
-        LEFT JOIN wfm_schema.tm_cluster d ON d.cluster_id = a.cluster_id
-    WHERE
-        a.is_active = true
-        AND a.is_delete = false
-        AND c.code :: text = 'SVTO' :: text
-        AND a.cluster_id <> 0
+        wfm_schema.tm_cluster a
 ),
 clock_in_out_intervals AS (
     SELECT
@@ -182,8 +172,8 @@ ticket_total_count AS (
         b.cluster_id
 )
 SELECT
-    ranked_spv_to.phone_number,
-    ranked_spv_to.cluster_id,
+--    ranked_cluster.phone_number,
+    ranked_cluster.cluster_id,
     (
         (
             (
@@ -205,7 +195,7 @@ Full Day ' :: text || to_char(
                                                         )
                                                     ) || '
 Dear SPV TO, berikut adalah performance TS/MBP ' :: text
-                                                ) || ranked_spv_to.cluster_name :: text
+                                                ) || ranked_cluster.cluster_name :: text
                                             ) || ' :' :: text
                                         ) || '
 Total Ticket : ' :: text
@@ -240,18 +230,16 @@ Total Close : ' :: text
 Keterangan
 1. [nama], [durasi jam clock in], [jumlah tiket takeover h-1], [jumlah tiket open h-1], [jumlah tiket close h-1]' :: text AS message
 FROM
-    ranked_spv_to
-    LEFT JOIN ranked_staff_to ON ranked_spv_to.cluster_id = ranked_staff_to.cluster_id
+    ranked_cluster
+    LEFT JOIN ranked_staff_to ON ranked_cluster.cluster_id = ranked_staff_to.cluster_id
     LEFT JOIN ticket_info ON ticket_info.pic_id :: text = ranked_staff_to.tx_user_mobile_management_id :: character varying :: text
-    LEFT JOIN ticket_total_count ON ticket_total_count.cluster_id = ranked_spv_to.cluster_id
+    LEFT JOIN ticket_total_count ON ticket_total_count.cluster_id = ranked_cluster.cluster_id
 GROUP BY
-    ranked_spv_to.phone_number,
-    ranked_spv_to.cluster_id,
-    ranked_spv_to.cluster_name,
+    ranked_cluster.cluster_id,
+    ranked_cluster.cluster_name,
     ticket_total_count.total_all_ticket,
     ticket_total_count.total_take_over_ticket,
     ticket_total_count.total_open_ticket,
     ticket_total_count.total_close_ticket
 ORDER BY
-    ranked_spv_to.phone_number,
-    ranked_spv_to.cluster_name;
+    ranked_cluster.cluster_name;

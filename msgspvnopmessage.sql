@@ -1,20 +1,23 @@
 -- wfm_schema.vw_message_spv_to source
 CREATE
-OR REPLACE VIEW wfm_schema.vw_message_spv_to_cluster AS WITH ranked_spv_to AS (
+OR REPLACE VIEW wfm_schema.vw_message_spv_to_nop AS WITH ranked_spv_to AS (
     SELECT
-        DISTINCT a.phone_number,
-        a.cluster_id,
-        d.cluster_name
+        a.phone_number,
+        a.nop_id,
+        b.nop_name,
     FROM
         wfm_schema.tx_user_management a
-        JOIN wfm_schema.tx_user_role b ON b.ref_user_id = a.ref_user_id
-        JOIN wfm_schema.tm_user_role c ON c.tm_user_role_id = b.role_id
-        JOIN wfm_schema.tm_cluster d ON d.cluster_id = a.cluster_id
+        JOIN wfm_schema.tm_nop b ON b.nop_id = a.nop_id
+        JOIN wfm_schema.tx_user_role c ON c.ref_user_id = a.ref_user_id
+        JOIN wfm_schema.tm_user_role d ON d.tm_user_role_id = c.role_id
     WHERE
         a.is_active = true
         AND a.is_delete = false
-        AND c.code = 'SVTO'
-        AND a.cluster_id <> 0
+        AND d.code = 'SVTO'
+        AND (
+            a.nop_id <> ''
+            AND a.cluster_id = 0
+        )
 ),
 clock_in_out_intervals AS (
     SELECT
@@ -56,11 +59,12 @@ ranked_staff_to AS (
     SELECT
         DISTINCT ON (a.employee_name) a.employee_name AS staffname,
         dense_rank() OVER (
-            PARTITION BY a.cluster_id
+            PARTITION BY a.nop_id
             ORDER BY
                 a.employee_name
         ) AS seq_no,
         a.cluster_id,
+        a.nop_id,
         a.tx_user_mobile_management_id,
         CASE
             WHEN ic.first_in_time IS NOT NULL
@@ -116,15 +120,13 @@ ticket_info AS (
     FROM
         wfm_schema.tx_ticket_terr_opr
     WHERE
-        -- tx_ticket_terr_opr.created_at >= (CURRENT_DATE - '1 day' :: interval)
-        -- AND tx_ticket_terr_opr.created_at < CURRENT_DATE
-        tx_ticket_terr_opr.created_at >=(CURRENT_DATE - INTERVAL '1 day')
+        tx_ticket_terr_opr.created_at >= (CURRENT_DATE - INTERVAL '1 day')
     GROUP BY
         tx_ticket_terr_opr.pic_id
 ),
 ticket_total_count AS (
     SELECT
-        b.cluster_id,
+        b.nop_id,
         count(
             CASE
                 WHEN a.status = 'ASSIGNED'
@@ -167,9 +169,9 @@ ticket_total_count AS (
         wfm_schema.tx_ticket_terr_opr a
         JOIN wfm_schema.tx_site b ON a.site_id = b.site_id
     WHERE
-        a.created_at >=(CURRENT_DATE - INTERVAL '1 day')
+        a.created_at >= (CURRENT_DATE - INTERVAL '1 day')
     GROUP BY
-        b.cluster_id
+        b.nop_id
 )
 SELECT
     ranked_spv_to.phone_number,
@@ -194,7 +196,7 @@ Full Day ' || to_char(
                                                         )
                                                     ) || '
 Dear SPV TO, berikut adalah performance TS/MBP '
-                                                ) || ranked_spv_to.cluster_name
+                                                ) || ranked_spv_to.nop_name
                                             ) || ' :'
                                         ) || '
 Total Ticket : '
@@ -230,16 +232,16 @@ Keterangan
 1. [nama], [durasi jam clock in], [jumlah tiket takeover h-1], [jumlah tiket open h-1], [jumlah tiket close h-1]' AS message
 FROM
     ranked_spv_to
-    LEFT JOIN ranked_staff_to ON ranked_spv_to.cluster_id = ranked_staff_to.cluster_id
+    LEFT JOIN ranked_staff_to ON ranked_spv_to.nop_id = ranked_staff_to.nop_id
     LEFT JOIN ticket_info ON ticket_info.pic_id = ranked_staff_to.tx_user_mobile_management_id :: VARCHAR
-    JOIN ticket_total_count ON ticket_total_count.cluster_id = ranked_spv_to.cluster_id
+    LEFT JOIN ticket_total_count ON ticket_total_count.nop_id = ranked_spv_to.nop_id
 GROUP BY
     ranked_spv_to.phone_number,
-    ranked_spv_to.cluster_name,
+    ranked_spv_to.nop_name,
     ticket_total_count.total_all_ticket,
     ticket_total_count.total_take_over_ticket,
     ticket_total_count.total_open_ticket,
     ticket_total_count.total_close_ticket
 ORDER BY
     ranked_spv_to.phone_number,
-    ranked_spv_to.cluster_name;
+    ranked_spv_to.nop_name;

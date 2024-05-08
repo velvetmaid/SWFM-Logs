@@ -45,11 +45,11 @@
         z-index: 100;
       }
 
-      .wrapper.slide-up {
+      .wrapper .slide-up {
         top: calc(100% - 24px);
 
       }
-      .wrapper.slide-down {
+      .wrapper .slide-down {
         top: 40%;
       }
     </style>
@@ -65,7 +65,6 @@
           wrapper.classList.remove("slide-down");
           wrapper.classList.add("slide-up");
         }
-        console.log("test");
       }
 
       pin.addEventListener("click", function () {

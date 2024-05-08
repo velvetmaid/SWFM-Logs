@@ -61,3 +61,13 @@ FROM
 WHERE
     a.is_active = TRUE
     AND a.is_delete = FALSE;
+
+-- GET CLUSTER BY NOP
+select
+    *
+from
+    wfm_schema.tm_nop tn
+    inner join wfm_schema.tm_mapping_cluster_nop tmcn on tn.nop_id = tmcn.nop_id
+    inner join wfm_schema.tm_cluster tc on tmcn.cluster_id = tc.cluster_id
+where
+    tn.nop_name = 'NOP BOGOR'

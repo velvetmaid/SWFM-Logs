@@ -1,6 +1,7 @@
 -- wfm_schema.vw_message_spv_to source
-CREATE
-OR REPLACE VIEW wfm_schema.vw_message_spv_to AS WITH ranked_spv_to AS (
+-- CREATE
+-- OR REPLACE VIEW wfm_schema.vw_message_spv_to_cluster AS 
+WITH ranked_spv_to AS (
     SELECT
         DISTINCT a.phone_number,
         a.cluster_id,
@@ -16,6 +17,46 @@ OR REPLACE VIEW wfm_schema.vw_message_spv_to AS WITH ranked_spv_to AS (
         AND c.code = 'SVTO'
         AND a.cluster_id <> 0
 ),
+first_clock_in AS (
+    SELECT
+        tx_absen.userid,
+        MIN(tx_absen.absentime) AS first_in_time
+    FROM
+        wfm_schema.tx_absen
+    WHERE
+        tx_absen.absentype = TRUE
+        AND tx_absen.absentime >= (CURRENT_DATE - INTERVAL '1 day')
+    GROUP BY
+        tx_absen.userid
+),
+last_clock_out AS (
+    SELECT
+        tx_absen.userid,
+        MAX(tx_absen.absentime) AS last_out_time
+    FROM
+        wfm_schema.tx_absen
+    WHERE
+        tx_absen.absentype = FALSE
+        AND tx_absen.absentime >= (CURRENT_DATE - INTERVAL '1 day')
+    GROUP BY
+        tx_absen.userid
+),
+intervals AS (
+    SELECT
+        ci.userid,
+        ci.first_in_time,
+        co.last_out_time,
+        ROUND(
+            EXTRACT(
+                EPOCH
+                FROM
+                    (co.last_out_time - ci.first_in_time)
+            ) / 3600
+        ) AS hours_interval
+    FROM
+        first_clock_in ci
+        JOIN last_clock_out co ON ci.userid = co.userid
+),
 ranked_staff_to AS (
     SELECT
         DISTINCT ON (a.employee_name) a.employee_name AS staffname,
@@ -26,27 +67,14 @@ ranked_staff_to AS (
         ) AS seq_no,
         a.cluster_id,
         a.tx_user_mobile_management_id,
-        CASE
-            WHEN ranked_absen.absentype THEN 'Clock In'
-            ELSE 'Clock Out'
-        END AS clock_status
+        i.first_in_time,
+        i.last_out_time,
+        i.hours_interval
     FROM
         wfm_schema.tx_user_mobile_management a
+        JOIN intervals i ON a.tx_user_mobile_management_id = i.userid
         JOIN wfm_schema.mapping_user_mobile_role b ON b.tx_user_mobile_management_id = a.tx_user_mobile_management_id
         JOIN wfm_schema.tm_user_role c ON c.tm_user_role_id = b.role_id
-        JOIN (
-            SELECT
-                tx_absen.userid,
-                tx_absen.absentype,
-                rank() OVER (
-                    PARTITION BY tx_absen.userid
-                    ORDER BY
-                        tx_absen.absentime DESC
-                ) AS rank_amount
-            FROM
-                wfm_schema.tx_absen
-        ) ranked_absen ON a.tx_user_mobile_management_id = ranked_absen.userid
-        LEFT JOIN wfm_schema.tx_ticket_terr_opr t ON a.tx_user_mobile_management_id :: VARCHAR = t.pic_id
     WHERE
         a.is_active = true
         AND a.is_delete = false
@@ -54,7 +82,6 @@ ranked_staff_to AS (
             c.code = 'MUSERTS'
             OR c.code = 'MUSERMBP'
         )
-        AND ranked_absen.rank_amount < 2
 ),
 ticket_info AS (
     SELECT
@@ -67,7 +94,14 @@ ticket_info AS (
         ) AS take_over_ticket,
         count(
             CASE
-                WHEN tx_ticket_terr_opr.status = 'ASSIGNED' THEN 1
+                WHEN tx_ticket_terr_opr.status = 'ASSIGNED'
+                OR tx_ticket_terr_opr.status = 'CANCELED'
+                OR tx_ticket_terr_opr.status = 'ESCALATED TO CTS'
+                OR tx_ticket_terr_opr.status = 'ESCALATED TO INSERA'
+                -- OR tx_ticket_terr_opr.status = 'IN PROGRESS'
+                OR tx_ticket_terr_opr.status = 'NEW'
+                OR tx_ticket_terr_opr.status = 'RESOLVED'
+                OR tx_ticket_terr_opr.status = 'SUBMITTED' THEN 1
                 ELSE NULL
             END
         ) AS open_ticket,
@@ -90,15 +124,16 @@ ticket_total_count AS (
         b.cluster_id,
         count(
             CASE
-                WHEN a.status = 'ASSIGNED'
+                WHEN a.status = 'IN PROGRESS'
+                OR a.status = 'ASSIGNED'
                 OR a.status = 'CANCELED'
-                OR a.status = 'CLOSED'
                 OR a.status = 'ESCALATED TO CTS'
                 OR a.status = 'ESCALATED TO INSERA'
                 OR a.status = 'IN PROGRESS'
                 OR a.status = 'NEW'
                 OR a.status = 'RESOLVED'
-                OR a.status = 'SUBMITTED' THEN 1
+                OR a.status = 'SUBMITTED'
+                OR a.status = 'CLOSED' THEN 1
                 ELSE NULL
             END
         ) AS total_all_ticket,
@@ -110,7 +145,14 @@ ticket_total_count AS (
         ) AS total_take_over_ticket,
         count(
             CASE
-                WHEN a.status = 'ASSIGNED' THEN 1
+                WHEN a.status = 'ASSIGNED'
+                OR a.status = 'CANCELED'
+                OR a.status = 'ESCALATED TO CTS'
+                OR a.status = 'ESCALATED TO INSERA'
+                -- OR a.status = 'IN PROGRESS'
+                OR a.status = 'NEW'
+                OR a.status = 'RESOLVED'
+                OR a.status = 'SUBMITTED' THEN 1
                 ELSE NULL
             END
         ) AS total_open_ticket,
@@ -172,7 +214,7 @@ Total Close : '
 %s. %s / %s / %s / %s / %s',
                 ranked_staff_to.seq_no,
                 ranked_staff_to.staffname,
-                ranked_staff_to.clock_status,
+                ranked_staff_to.hours_interval,
                 COALESCE(ticket_info.take_over_ticket, '0' :: bigint),
                 COALESCE(ticket_info.open_ticket, '0' :: bigint),
                 COALESCE(ticket_info.close_ticket, '0' :: bigint)
@@ -185,7 +227,7 @@ Total Close : '
 
 ----------------------------------------
 Keterangan
-1. [nama], [status clock in], [jumlah tiket takeover h-1], [jumlah tiket open h-1], [jumlah tiket close h-1]' AS message
+1. [nama], [durasi jam clock in], [jumlah tiket takeover h-1], [jumlah tiket open h-1], [jumlah tiket close h-1]' AS message
 FROM
     ranked_spv_to
     LEFT JOIN ranked_staff_to ON ranked_spv_to.cluster_id = ranked_staff_to.cluster_id

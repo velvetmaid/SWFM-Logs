@@ -598,6 +598,10 @@ SELECT
     a.site_id,
     a.site_name,
     a.site_address,
+	a.area_id,
+	a.regional_id,
+	a.nop_id,
+	a.cluster_id,
     TRUE AS is_site_reguler
 FROM
     wfm_schema.tx_site a
@@ -606,6 +610,10 @@ SELECT
     b.site_id,
     b.site_name,
     b.site_address,
+	b.area_id,
+	b.regional_id,
+	b.nop_id,
+	b.cluster_id,
     FALSE AS is_site_reguler
 FROM
     wfm_schema.tx_site_warehouse b

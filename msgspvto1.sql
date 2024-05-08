@@ -1,5 +1,4 @@
-create
-OR replace view wfm_schema.vw_message_spv_to AS WITH ranked_spv_to AS (
+CREATE OR REPLACE view wfm_schema.vw_message_spv_to AS WITH ranked_spv_to AS (
     SELECT
         DISTINCT a.phone_number,
         a.cluster_id,
