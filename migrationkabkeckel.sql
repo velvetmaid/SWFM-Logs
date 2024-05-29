@@ -1,4 +1,10 @@
+-- NOTE: tm_mapping has pk and fk to join to tm_your_master_data, tm_your_master_data only have pk
+-- theres tm_mapping source is from wfm_schema.tx_site i guess and tm_your_master_data source from ndm_schema.reference.master_site_territory
+
+-- Start
 -- WFM SCHEMA
+-- source from ndm 
+select distinct id_kec , id_kab from reference.master_site_territory
 CREATE TABLE wfm_schema.tm_mapping_kecamatan_kabupaten (
     kecamatan_id int,
     kabupaten_id int,
@@ -11,6 +17,30 @@ CREATE TABLE wfm_schema.tm_mapping_kecamatan_kabupaten (
     is_active boolean DEFAULT TRUE,
     is_delete boolean DEFAULT FALSE
 )
+-- End
+
+-- Start
+-- coz in ndm does not have nop id, first save it nop_name from ndm as nop_id
+select distinct id_kab, nop_name from reference.master_site_territory mst
+-- then update nop_name to be actual nop_id from wfm tm_nop
+UPDATE wfm_schema.tm_mapping_kabupaten_nop
+SET nop_id = b.nop_id
+FROM wfm_schema.tm_nop b
+WHERE tm_mapping_kabupaten_nop.nop_id = b.nop_name;
+-- thats it
+CREATE TABLE wfm_schema.tm_mapping_kabupaten_nop (
+	kabupaten_id int4,
+	nop_id varchar(30),
+	created_by varchar(255) DEFAULT NULL,
+	created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL,
+	modified_by varchar(255) DEFAULT NULL,
+	modified_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL,
+	deleted_by varchar(255) DEFAULT NULL,
+	deleted_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL,
+	is_active boolean DEFAULT TRUE,
+	is_delete boolean DEFAULT FALSE
+);
+-- End
 
 CREATE TABLE wfm_schema.tm_kabupaten (
     kabupaten_id int primary key,
@@ -94,13 +124,18 @@ select count(*) from (
 select distinct id_kab, nop_name from reference.master_site_territory mst
 ) as test
 
+-- tm_desa
 select distinct id_desa, id_kec, desa from reference.master_site_territory mst
 
+-- tm_kecamatan
 select distinct id_kec, kecamatan from reference.master_site_territory
 
+-- tm_kabupaten
+select distinct id_kab, kabupaten from reference.master_site_territory mst
+
+-- im feel like dumb shit, idk but its like mapping table coz ndm doesnt save nop id so join that with ndm.mst.nop_name = wfm_schema.tm_nop.nop name to get nop_id
 select distinct id_kab, nop_name, kabupaten from reference.master_site_territory mst
 
-select distinct id_kab, kabupaten from reference.master_site_territory mst
 
 SELECT city, COUNT(*)
 from reference.master_site_territory
