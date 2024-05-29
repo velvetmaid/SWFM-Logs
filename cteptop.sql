@@ -2,17 +2,17 @@ WITH availabillity_ticket AS (
     SELECT
         tumm.tx_user_mobile_management_id,
         string_agg(
-            DISTINCT ttto.ticket_no :: text,
-            ', ' :: text
+            DISTINCT ttto.ticket_no,
+            ', '
         ) AS ticket_no,
         CASE
-            WHEN COUNT(ttto.ticket_no) > 0 THEN 'Not Available' :: text
-            ELSE 'Available' :: text
+            WHEN COUNT(ttto.ticket_no) > 0 THEN 'Not Available'
+            ELSE 'Available'
         END AS availability_status
     FROM
         wfm_schema.tx_user_mobile_management tumm
-        LEFT JOIN wfm_schema.tx_ticket_terr_opr ttto ON ttto.pic_id :: text = tumm.tx_user_mobile_management_id :: character varying :: text
-        AND ttto.status :: text = 'IN PROGRESS' :: text
+        LEFT JOIN wfm_schema.tx_ticket_terr_opr ttto ON ttto.pic_id = tumm.tx_user_mobile_management_id :: character varying
+        AND ttto.status = 'IN PROGRESS'
         AND ttto.created_at >= (CURRENT_DATE - '1 day' :: interval)
     GROUP BY
         tumm.tx_user_mobile_management_id
@@ -41,7 +41,7 @@ row_ranked_absen as (
 ),
 ranked_devices AS (
     SELECT
-        tld.deviceudid :: text AS deviceudid,
+        tld.deviceudid :: text,
         tld.currenttime,
         tld.longitude,
         tld.latitude,
@@ -69,7 +69,7 @@ row_ranked_devices AS (
 list_role AS (
     SELECT
         mumr.tx_user_mobile_management_id,
-        string_agg(DISTINCT tur.name :: text, ', ' :: text) AS role_name
+        string_agg(DISTINCT tur.name, ', ') AS role_name
     FROM
         wfm_schema.tm_user_role tur
         JOIN wfm_schema.mapping_user_mobile_role mumr ON tur.tm_user_role_id = mumr.role_id
