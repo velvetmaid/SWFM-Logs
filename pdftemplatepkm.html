@@ -3,22 +3,43 @@
   <head>
     <meta charset="UTF-8" />
     <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      .ff-lucida {
+        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+      }
+      .ff-gill-sans {
+        font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
+          sans-serif;
+      }
+      .ff-verdana {
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+      }
+      .ff-courier-new {
+        font-family: "Courier New", Courier, monospace;
+      }
+      .ff-bolder {
+        font-weight: bolder;
+      }
       body {
         font-family: Arial, sans-serif;
         margin: 0;
         height: 95vh;
         padding: 0;
         background: linear-gradient(
-            rgba(255, 255, 255, 0.7),
-            rgba(255, 255, 255, 0.7)
+            rgba(255, 255, 255, 0.98),
+            rgba(255, 255, 255, 0.8)
           ),
           /* This creates the transparent overlay */
             url(https://maxsi.id/web/wp-content/uploads/2021/07/icon-telkomsel-terbaru.png);
         background-position: center;
         background-size: contain;
         background-repeat: no-repeat;
+        background-size: 25rem;
       }
-
       .header,
       .footer {
         display: flex;
@@ -27,30 +48,43 @@
         margin: 1rem;
       }
       .header img {
-        height: 5rem;
+        height: 4rem;
       }
       .footer img {
         height: 2rem;
+        margin-right: 1rem;
       }
       .header {
-        border-bottom: 1px solid #ddd;
+        border-bottom: 3px solid #000;
+        /*  */
+      }
+      .header-title p {
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+      .header-title span {
+        font-size: 0.9rem;
       }
       .footer {
-        border-top: 1px solid #ddd;
+        border-top: 3px solid #000;
         bottom: 0;
         position: absolute;
         left: 0;
         right: 0;
       }
       .footer p {
-        font-size: 0.5rem;
-        font-weight: bolder;
+        font-size: 1rem;
         font-style: italic;
         text-align: left;
       }
+      .footer img {
+        width: 5rem;
+        height: 5rem;
+      }
       .content {
-        text-align: center;
-        margin: 1rem;
+        width: auto;
+        display: flex;
+        justify-content: left;
       }
       .content img {
         max-width: 300px;
@@ -58,61 +92,211 @@
         border-radius: 1rem;
       }
       .text-content {
-        text-align: left;
-        margin: 1rem 5rem;
+        margin: 0 1rem;
+        width: 100%;
       }
       .text-content div {
-        margin: 0.5rem;
+        margin: 0.5rem 0;
       }
       .text-content span {
-        font-size: 0.75rem;
+        font-size: 1rem;
       }
       .text-content p {
         margin: 0;
-        font-weight: bold;
-        font-size: 0.8rem;
+        font-size: 1.5rem;
+      }
+      .display-flex-col {
+        display: flex;
+        gap: 0px 3rem;
+      }
+      .display-flex-col > div {
+        width: 50%;
       }
     </style>
   </head>
   <body>
     <div class="header">
-      <h3>Laporan PLN No Ticket</h3>
+      <div class="header-title">
+        <p class="ff-gill-sans">No Ticket PKM2024-000000000000</p>
+        <span class="ff-lucida">Laporan Pencatatan KWH Meter</span>
+      </div>
+      <!--  -->
       <img
         src="https://maxsi.id/web/wp-content/uploads/2021/07/logo-telkomsel-baru.png"
         alt="Logo"
       />
     </div>
     <div class="content">
-      <img
-        src="https://assets.promediateknologi.id/crop/0x0:0x0/750x500/webp/photo/2023/06/16/Logo-Telkomsel-4191288589.jpg"
-        alt="Center Image"
-      />
       <div class="text-content">
         <div>
-          <span>ID Pelanggan</span>
-          <p>
-            This is some content below the image. You can add more paragraphs or
-            other HTML elements here.
-          </p>
+          <span class="ff-verdana ff-bolder">ID Pelanggan</span>
+          <p class="ff-courier-new">9992382362534</p>
+        </div>
+        <hr />
+        <div class="display-flex-col">
+          <div>
+            <div>
+              <span class="ff-verdana ff-bolder">Site ID</span>
+              <p class="ff-courier-new">JKS884</p>
+            </div>
+            <hr />
+            <div>
+              <span class="ff-verdana ff-bolder">Site Name</span>
+              <p class="ff-courier-new">JKS884_Bangka9PTEL</p>
+            </div>
+            <hr />
+            <div>
+              <span class="ff-verdana ff-bolder">Alamat Site</span>
+              <p class="ff-courier-new">
+                JLN BANGKA 9B KELURAHAN PELA MAMPANG KECAMATAN MAMPANG PRAPATAN
+                KABUPATEN JAKARTA SELATAN 12720
+              </p>
+            </div>
+            <hr />
+          </div>
+          <div>
+            <div>
+              <span class="ff-verdana ff-bolder">Kabupaten</span>
+              <p class="ff-courier-new">KOTA JAKARTA SELATAN</p>
+            </div>
+            <hr />
+            <div>
+              <span class="ff-verdana ff-bolder">Kecamatan</span>
+              <p class="ff-courier-new">Bangka9PTEL</p>
+            </div>
+            <hr />
+            <div>
+              <span class="ff-verdana ff-bolder">Kelurahan</span>
+              <p class="ff-courier-new">Bangka9PTEL</p>
+            </div>
+            <hr />
+          </div>
         </div>
         <div>
-          <span>Site Id</span>
-          <p>
-            This is some content below the image. You can add more paragraphs or
-            other HTML elements here.
-          </p>
+          <span class="ff-verdana ff-bolder">Hasil Pencatatan (kWh)</span>
+          <p class="ff-courier-new">60.000</p>
         </div>
+        <hr />
         <div>
-          <span>Ticket No</span>
-          <p>
-            This is some content below the image. You can add more paragraphs or
-            other HTML elements here.
-          </p>
+          <span class="ff-verdana ff-bolder">Foto Hasil Pencatatan (kWh)</span>
         </div>
+        <img
+          src="https://assets.promediateknologi.id/crop/0x0:0x0/750x500/webp/photo/2023/06/16/Logo-Telkomsel-4191288589.jpg"
+          alt="Image Content"
+        />
+        <hr />
+        <div>
+          <span class="ff-verdana ff-bolder">Tanggal Plan Pelaporan</span>
+          <p class="ff-courier-new">Sunday, 10 June 2024</p>
+        </div>
+        <hr />
       </div>
     </div>
     <div class="footer">
-      <p>SWFM Generated At 1900 01 01 00 00 00</p>
+      <div>
+        <span class="ff-bolder ff-verdana">CONFIDENTIAL</span>
+        <p class="ff-lucida">SMART WFM - Generated at 2024.06.13</p>
+      </div>
+      <img
+        src="https://smartwfm.network.telkomsel.co.id/img/Telkomsel_SmartWFM.Telkomsel_SmartWFM.png?cvQhsGJNKKoC+rQMBorc0A"
+        alt="WFM Logo"
+      />
+    </div>
+  </body>
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+  <body>
+    <div class="header">
+      <div class="header-title">
+        <p class="ff-gill-sans">No Ticket PKM2024-000000000000</p>
+        <span class="ff-lucida">Laporan Pencatatan KWH Meter</span>
+      </div>
+      <!--  -->
+      <img
+        src="https://maxsi.id/web/wp-content/uploads/2021/07/logo-telkomsel-baru.png"
+        alt="Logo"
+      />
+    </div>
+    <div class="content">
+      <div class="text-content">
+        <div style="text-align: center; margin-bottom: 3rem">
+          <span
+            class="ff-lucida ff-bolder"
+            style="font-size: 1.5rem; border-bottom: 2px solid black"
+            >Lampiran</span
+          >
+        </div>
+        <div class="display-flex-col">
+          <div>
+            <div>
+              <span class="ff-verdana ff-bolder">TEG. Phase R-N</span>
+              <p class="ff-courier-new">100</p>
+            </div>
+            <hr />
+            <div>
+              <span class="ff-verdana ff-bolder">TEG. Phase S-N</span>
+              <p class="ff-courier-new">150</p>
+            </div>
+            <hr />
+            <div>
+              <span class="ff-verdana ff-bolder">TEG. Phase T-N</span>
+              <p class="ff-courier-new">150</p>
+            </div>
+            <hr />
+          </div>
+          <div>
+            <div>
+              <span class="ff-verdana ff-bolder">TEG. Phase R-T</span>
+              <p class="ff-courier-new">200</p>
+            </div>
+            <hr />
+            <div>
+              <span class="ff-verdana ff-bolder">TEG. Phase S-T</span>
+              <p class="ff-courier-new">250</p>
+            </div>
+            <hr />
+            <div>
+              <span class="ff-verdana ff-bolder">TEG. Phase R-S</span>
+              <p class="ff-courier-new">300</p>
+            </div>
+            <hr />
+            <div>
+              <span class="ff-verdana ff-bolder">TEG. Phase G-N</span>
+              <p class="ff-courier-new">350</p>
+            </div>
+            <hr />
+          </div>
+        </div>
+        <div>
+          <span class="ff-verdana ff-bolder">Phase R</span>
+          <p class="ff-courier-new">400</p>
+        </div>
+        <hr />
+        <div>
+          <span class="ff-verdana ff-bolder">Phase S</span>
+          <p class="ff-courier-new">450</p>
+        </div>
+        <hr />
+        <div>
+          <span class="ff-verdana ff-bolder">Phase T</span>
+          <p class="ff-courier-new">500</p>
+        </div>
+        <hr />
+        <div>
+          <span class="ff-verdana ff-bolder">Frek</span>
+          <p class="ff-courier-new">550</p>
+        </div>
+        <hr />
+      </div>
+    </div>
+    <div class="footer">
+      <div>
+        <span class="ff-bolder ff-verdana">CONFIDENTIAL</span>
+        <p class="ff-lucida">SMART WFM - Generated at 2024.06.13</p>
+      </div>
       <img
         src="https://smartwfm.network.telkomsel.co.id/img/Telkomsel_SmartWFM.Telkomsel_SmartWFM.png?cvQhsGJNKKoC+rQMBorc0A"
         alt="Logo"
