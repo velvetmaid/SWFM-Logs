@@ -1575,14 +1575,15 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_recap_pln (
     is_has_release boolean
 );
 
-CREATE TABLE IF NOT EXISTS wfm_schema.tx_pengisian_token_listrik (
+CREATE TABLE wfm_schema.tx_pengisian_token_listrik (
     tx_pengisian_token_listrik_id SERIAL PRIMARY KEY,
-    ticket_no VARCHAR(255),
-    status VARCHAR(100),
-    site_id VARCHAR(25),
+    ref_ticket_no VARCHAR(255),
+    ref_ticket_no_last VARCHAR(150),
     id_pelanggan VARCHAR(50),
+    id_pelanggan_name VARCHAR(255),
+    billing_id VARCHAR(100),
     no_token VARCHAR(50),
-    kwh_token VARCHAR(50),
+    kwh_token NUMERIC(12, 2),
     daya VARCHAR(50),
     status_pengisian_token VARCHAR(100),
     foto_evidence_guuid VARCHAR(255),
@@ -1590,15 +1591,580 @@ CREATE TABLE IF NOT EXISTS wfm_schema.tx_pengisian_token_listrik (
     bulan INT,
     tahun INT,
     daya_terpasang VARCHAR(50),
-    tanggal_pengisian TIMESTAMP WITHOUT TIME ZONE,
+    kwh_sebelum_pengisian NUMERIC(15, 2),
     foto_kwh_sebelum_pengisian_guuid VARCHAR(255),
+    kwh_setelah_pengisian NUMERIC(15, 2),
     foto_kwh_setelah_pengisian_guuid VARCHAR(255),
+    tanggal_pengisian TIMESTAMP WITHOUT TIME ZONE,
+    selisih_hari INT,
+    pemakaian_kwh_perhari NUMERIC(12, 2),
+    estimasi_pengisian_selanjutnya TIMESTAMP WITHOUT TIME ZONE
+);
+
+CREATE TABLE wfm_schema.tx_pengisian_token_listrik_header (
+    tx_pengisian_token_listrik_header_id SERIAL PRIMARY KEY,
+    ticket_no VARCHAR(255),
+    id_pelanggan VARCHAR(50),
+    site_id VARCHAR(25),
+    status VARCHAR(100),
     created_by INT,
     created_at TIMESTAMP WITHOUT TIME ZONE,
     response_by INT,
     response_at TIMESTAMP WITHOUT TIME ZONE,
-    submit_by INT,
-    submit_at TIMESTAMP WITHOUT TIME ZONE,
-    approve_by INT,
-    approve_at TIMESTAMP WITHOUT TIME ZONE
-)
+    submitted_by INT,
+    submitted_at TIMESTAMP WITHOUT TIME ZONE,
+    approved_by INT,
+    approved_at TIMESTAMP WITHOUT TIME ZONE
+);
+
+CREATE TABLE IF NOT EXISTS wfm_schema.tm_all_tagihan_listrik (
+    tm_all_tagihan_listrik_id SERIAL primary key,
+    idpel varchar(255),
+    pelname varchar(255),
+    goltarif varchar(255),
+    daya varchar(255),
+    billtype varchar(255),
+    siteid varchar(255),
+    towerprovider varchar(255),
+    periode varchar(255),
+    status varchar(255),
+    billstatus varchar(255),
+    kwhawal varchar(255),
+    kwhakhir varchar(255),
+    kwhpakai varchar(255),
+    tagihan varchar(255),
+    pathevidence varchar(255),
+    token varchar(255)
+);
+
+ALTER TABLE
+    wfm_schema.tx_recap_pln
+ADD
+    COLUMN teg_phase_rn numeric(10, 2),
+ADD
+    COLUMN foto_teg_phase_rn_name varchar(255),
+ADD
+    COLUMN foto_teg_phase_rn_guuid varchar(255),
+ADD
+    COLUMN teg_phase_sn numeric(10, 2),
+ADD
+    COLUMN foto_teg_phase_sn_name varchar(255),
+ADD
+    COLUMN foto_teg_phase_sn_guuid varchar(255),
+ADD
+    COLUMN teg_phase_tn numeric(10, 2),
+ADD
+    COLUMN foto_teg_phase_tn_name varchar(255),
+ADD
+    COLUMN foto_teg_phase_tn_guuid varchar(255),
+ADD
+    COLUMN teg_phase_rt numeric(10, 2),
+ADD
+    COLUMN foto_teg_phase_rt_name varchar(255),
+ADD
+    COLUMN foto_teg_phase_rt_guuid varchar(255),
+ADD
+    COLUMN teg_phase_st numeric(10, 2),
+ADD
+    COLUMN foto_teg_phase_st_name varchar(255),
+ADD
+    COLUMN foto_teg_phase_st_guuid varchar(255),
+ADD
+    COLUMN teg_phase_rs numeric(10, 2),
+ADD
+    COLUMN foto_teg_phase_rs_name varchar(255),
+ADD
+    COLUMN foto_teg_phase_rs_guuid varchar(255),
+ADD
+    COLUMN teg_phase_gn numeric(10, 2),
+ADD
+    COLUMN foto_teg_phase_gn_name varchar(255),
+ADD
+    COLUMN foto_teg_phase_gn_guuid varchar(255),
+ADD
+    COLUMN total_arus_phase_r numeric(10, 2),
+ADD
+    COLUMN foto_total_arus_phase_r_name varchar(255),
+ADD
+    COLUMN foto_total_arus_phase_r_guuid varchar(255),
+ADD
+    COLUMN total_arus_phase_s numeric(10, 2),
+ADD
+    COLUMN foto_total_arus_phase_s_name varchar(255),
+ADD
+    COLUMN foto_total_arus_phase_s_guuid varchar(255),
+ADD
+    COLUMN total_arus_phase_t numeric(10, 2),
+ADD
+    COLUMN foto_total_arus_phase_t_name varchar(255),
+ADD
+    COLUMN foto_total_arus_phase_t_guuid varchar(255),
+ADD
+    COLUMN total_arus_frek numeric(10, 2),
+ADD
+    COLUMN foto_total_arus_frek_name varchar(255),
+ADD
+    COLUMN foto_total_arus_frek_guuid varchar(255) CREATE TABLE wfm_schema.tm_power_pln_pelanggan (
+        tm_power_pln_pelanggan_id SERIAL PRIMARY KEY,
+        id_pelanggan_nomor varchar(50),
+        id_pelanggan_name varchar(255),
+        site_id varchar(25),
+        jenis_inquiry varchar(100),
+        tarif_terpasang varchar(50),
+        daya_terpasang varchar(50),
+        skema_bayar varchar(100),
+        wilayah_pln varchar(255),
+        area_pln varchar(255),
+        status_id_pelanggan varchar(100),
+        amr_status varchar(100),
+        asset_holder varchar(100),
+        denom_prepaid varchar(100),
+        status_ttc varchar(100),
+        tp_name varchar(100),
+        tower_type varchar(100),
+        is_delete bool,
+        gol_tarif varchar(255),
+        daya varchar(50),
+        bill_type varchar(50),
+        plafond varchar(255),
+        status_site varchar(100),
+        tower varchar(100),
+        tx_request_powerid BIGINT,
+        tm_powerid BIGINT,
+        bill_responsibility varchar(100),
+        site_owner varchar(255)
+    );
+
+-- wfm_schema.vw_ticket_technical_support source
+CREATE
+OR REPLACE VIEW wfm_schema.vw_ticket_technical_support AS
+SELECT
+    tts.no_ticket,
+    tts.site_id,
+    ts.site_name,
+    tts.cluster_area,
+    tma.area_name,
+    tmr.regional_name,
+    tmn.nop_name,
+    tmc.cluster_name,
+    tts.category,
+    tts.ticket_subject,
+    tts.job_details,
+    tts.job_targets,
+    CASE
+        WHEN EXTRACT(
+            YEAR
+            FROM
+                tts.submit_time
+        ) = 1900 THEN 'IN SLA'
+        WHEN tts.submit_time > tts.sla_end THEN 'OUT SLA'
+        ELSE 'IN SLA'
+    END AS sla,
+    tts.sla_start,
+    tts.sla_end,
+    tts.sla_range,
+    tts.created_by,
+    tts.created_at,
+    tts.modified_by,
+    tts.modified_at,
+    tts.no_ticket,
+    tts.activity_name,
+    tts.role_name,
+    tts.respone_time,
+    tts.submit_time,
+    tts.user_submitter,
+    tts.approve_time,
+    tts.user_approve,
+    tts.note,
+    tts.review,
+    tts.status,
+    tts.rootcause1,
+    tts.rootcause2,
+    tts.rootcause3,
+    tts.rootcause_remark,
+    tts.resolution_action,
+    tts.pic_id,
+    tts.pic_name,
+    tts.description,
+    tts.name,
+    tts.issue_category,
+    tts.is_asset_change,
+    tts.take_over_at,
+    tts.checkin_at,
+    string_agg(DISTINCT tmur.name :: text, ', ' :: text) AS created_role_name
+FROM
+    wfm_schema.ticket_technical_support tts
+    LEFT JOIN wfm_schema.tx_user_role txur ON tts.created_by = txur.ref_user_id
+    LEFT JOIN wfm_schema.tm_user_role tmur ON txur.role_id = tmur.tm_user_role_id
+    INNER JOIN wfm_schema.tx_site ts ON tts.site_id = ts.site_id
+    LEFT JOIN wfm_schema.tm_area tma ON ts.area_id = tma.area_id
+    LEFT JOIN wfm_schema.tm_regional tmr ON ts.regional_id = tmr.regional_id
+    LEFT JOIN wfm_schema.tm_nop tmn ON ts.nop_id = tmn.nop_id
+    LEFT JOIN wfm_schema.tm_cluster tmc ON ts.cluster_id = tmc.cluster_id
+WHERE
+    tts.is_exclude = false
+GROUP BY
+    tts.ticket_technical_support_id,
+    ts.site_id,
+    tma.area_id,
+    tmr.regional_id,
+    tmn.nop_id,
+    tmc.cluster_id;
+
+SELECT
+    tts.no_ticket,
+    tts.site_id,
+    ts.site_name,
+    tts.cluster_area,
+    tma.area_name,
+    tmr.regional_name,
+    tmn.nop_name,
+    tmc.cluster_name,
+    tts.category,
+    tts.ticket_subject,
+    tts.job_details,
+    tts.job_targets,
+    CASE
+        WHEN EXTRACT(
+            YEAR
+            FROM
+                tts.submit_time
+        ) = 1900 THEN 'IN SLA'
+        WHEN tts.submit_time > tts.sla_end THEN 'OUT SLA'
+        ELSE 'IN SLA'
+    END AS sla,
+    tts.sla_start,
+    tts.sla_end,
+    tts.sla_range,
+    tts.created_by,
+    tts.created_at,
+    tts.modified_by,
+    tts.modified_at,
+    tts.no_ticket,
+    tts.activity_name,
+    tts.role_name,
+    tts.respone_time,
+    tts.submit_time,
+    tts.user_submitter,
+    tts.approve_time,
+    tts.user_approve,
+    tts.note,
+    tts.review,
+    tts.status,
+    tts.rootcause1,
+    tts.rootcause2,
+    tts.rootcause3,
+    tts.rootcause_remark,
+    tts.resolution_action,
+    tts.pic_id,
+    tts.pic_name,
+    tts.description,
+    tts.name,
+    tts.issue_category,
+    tts.is_asset_change,
+    tts.take_over_at,
+    tts.checkin_at,
+    string_agg(DISTINCT tmur.name :: text, ', ' :: text) AS created_role_name
+FROM
+    { ticket_technical_support } tts
+    LEFT JOIN { tx_user_role } txur ON tts.created_by = txur.ref_user_id
+    LEFT JOIN { tm_user_role } tmur ON txur.role_id = tmur.tm_user_role_id
+    INNER JOIN { tx_site } ts ON tts.site_id = ts.site_id
+    LEFT JOIN { tm_area } tma ON ts.area_id = tma.area_id
+    LEFT JOIN { tm_regional } tmr ON ts.regional_id = tmr.regional_id
+    LEFT JOIN { tm_nop } tmn ON ts.nop_id = tmn.nop_id
+    LEFT JOIN { tm_cluster } tmc ON ts.cluster_id = tmc.cluster_id
+WHERE
+    tts.is_exclude = false
+GROUP BY
+    tts.ticket_technical_support_id,
+    ts.site_id,
+    tma.area_id,
+    tmr.regional_id,
+    tmn.nop_id,
+    tmc.cluster_id;
+
+{ "no_ticket": "tts.no_ticket",
+"site_id": "tts.site_id",
+"site_name": "ts.site_name",
+"cluster_area": "tts.cluster_area",
+"area_name": "tma.area_name",
+"regional_name": "tmr.regional_name",
+"nop_name": "tmn.nop_name",
+"cluster_name": "tmc.cluster_name",
+"category": "tts.category",
+"ticket_subject": "tts.ticket_subject",
+"job_details": "tts.job_details",
+"job_targets": "tts.job_targets",
+"sla": "asd",
+"sla_start": "tts.sla_start",
+"sla_end": "tts.sla_end",
+"sla_range": "tts.sla_range",
+"created_by": "tts.created_by",
+"created_at": "tts.created_at",
+"modified_by": "tts.modified_by",
+"modified_at": "tts.modified_at",
+"no_ticket_duplicated": "tts.no_ticket",
+"activity_name": "tts.activity_name",
+"role_name": "tts.role_name",
+"response_time": "tts.respone_time",
+"submit_time": "tts.submit_time",
+"user_submitter": "tts.user_submitter",
+"approve_time": "tts.approve_time",
+"user_approve": "tts.user_approve",
+"note": "tts.note",
+"review": "tts.review",
+"status": "tts.status",
+"rootcause1": "tts.rootcause1",
+"rootcause2": "tts.rootcause2",
+"rootcause3": "tts.rootcause3",
+"rootcause_remark": "tts.rootcause_remark",
+"resolution_action": "tts.resolution_action",
+"pic_id": "tts.pic_id",
+"pic_name": "tts.pic_name",
+"description": "tts.description",
+"name": "tts.name",
+"issue_category": "tts.issue_category",
+"is_asset_change": "tts.is_asset_change",
+"take_over_at": "tts.take_over_at",
+"checkin_at": "tts.checkin_at",
+"created_role_name": "string_agg(DISTINCT tmur.name :: text, ', ' :: text)" } -- FIXED EXPORT FIELD OPERATION
+SELECT
+    tts.no_ticket,
+    tts.site_id,
+    ts.site_name,
+    tts.cluster_area,
+    tma.area_name,
+    tmr.regional_name,
+    tmn.nop_name,
+    tmc.cluster_name,
+    tts.category,
+    tts.ticket_subject,
+    tts.job_details,
+    tts.job_targets,
+    CASE
+        WHEN EXTRACT(
+            YEAR
+            FROM
+                tts.submit_time
+        ) = 1900 THEN 'IN SLA'
+        WHEN tts.submit_time > tts.sla_end THEN 'OUT SLA'
+        ELSE 'IN SLA'
+    END AS sla,
+    tts.sla_start,
+    tts.sla_end,
+    tts.sla_range,
+    tts.created_by,
+    tts.created_at,
+    tts.modified_by,
+    tts.modified_at,
+    tts.no_ticket,
+    tts.activity_name,
+    tts.role_name,
+    tts.respone_time,
+    tts.submit_time,
+    tts.user_submitter,
+    tts.approve_time,
+    tts.user_approve,
+    tts.note,
+    tts.review,
+    tts.status,
+    tts.rootcause1,
+    tts.rootcause2,
+    tts.rootcause3,
+    tts.rootcause_remark,
+    tts.resolution_action,
+    tts.pic_id,
+    tts.pic_name,
+    tts.description,
+    tts.name,
+    tts.issue_category,
+    tts.is_asset_change,
+    tts.take_over_at,
+    tts.checkin_at,
+    string_agg(DISTINCT tmur.name :: text, ', ' :: text) AS created_role_name
+FROM
+    { ticket_technical_support } tts
+    LEFT JOIN { tx_user_role } txur ON tts.created_by = txur.ref_user_id
+    LEFT JOIN { tm_user_role } tmur ON txur.role_id = tmur.tm_user_role_id
+    INNER JOIN { tx_site } ts ON tts.site_id = ts.site_id
+    LEFT JOIN { tm_area } tma ON ts.area_id = tma.area_id
+    LEFT JOIN { tm_regional } tmr ON ts.regional_id = tmr.regional_id
+    LEFT JOIN { tm_nop } tmn ON ts.nop_id = tmn.nop_id
+    LEFT JOIN { tm_cluster } tmc ON ts.cluster_id = tmc.cluster_id
+WHERE
+    tts.is_exclude = false
+GROUP BY
+    tts.ticket_technical_support_id,
+    ts.site_id,
+    tma.area_id,
+    tmr.regional_id,
+    tmn.nop_id,
+    tmc.cluster_id;
+
+-- 
+CREATE TABLE wfm_schema.tx_pengisian_token_listrik_header (
+    tx_pengisian_token_listrik_header_id SERIAL PRIMARY KEY,
+    ticket_no varchar(100),
+    ref_ticket_no_last varchar(100),
+    ticket_ipas_id varchar(100),
+    id_pelanggan varchar(50),
+    id_pelanggan_name varchar(100),
+    site_id varchar(25),
+    status varchar(100),
+    bulan INT,
+    tahun INT,
+    kwh_awal numeric(15, 2),
+    kwh_akhir numeric(15, 2),
+    tanggal_pengisian TIMESTAMP WITHOUT TIME ZONE,
+    tanggal_pengisian_terakhir TIMESTAMP WITHOUT TIME ZONE,
+    selisih_hari INT,
+    pemakaian_kwh_perhari numeric(15, 2),
+    estimasi_pengisian_selanjutnya TIMESTAMP WITHOUT TIME ZONE,
+    total_kwh_token numeric(15, 2),
+    total_kwh_token_terakhir numeric(15, 2),
+    total_denom_prepaid BIGINT,
+    daya_terpasang varchar(50),
+    created_by INT,
+    created_at TIMESTAMP WITHOUT TIME ZONE,
+    take_over_by INT,
+    take_over_at TIMESTAMP WITHOUT TIME ZONE,
+    request_permit_by INT,
+    request_permit_at TIMESTAMP WITHOUT TIME ZONE,
+    follow_up_by INT,
+    follow_up_at TIMESTAMP WITHOUT TIME ZONE,
+    checkin_by INT,
+    checkin_at TIMESTAMP WITHOUT TIME ZONE,
+    submitted_by INT,
+    submitted_at TIMESTAMP WITHOUT TIME ZONE,
+    approved_by INT,
+    approved_at TIMESTAMP WITHOUT TIME ZONE,
+    acknowledge_nop_by INT,
+    acknowledge_nop_at TIMESTAMP WITHOUT TIME ZONE,
+    acknowledge_nos_name varchar(255),
+    acknowledge_nos_at TIMESTAMP WITHOUT TIME ZONE,
+    created_name varchar(150),
+    take_over_name varchar(150),
+    request_permit_name varchar(150),
+    follow_up_name varchar(150),
+    checkin_name varchar(150),
+    submitted_name varchar(150),
+    approved_name varchar(150),
+    acknowledge_nop_name varchar(150)
+) -- 
+CREATE TABLE wfm_schema.tx_pengisian_token_listrik (
+    tx_pengisian_token_listrik_id SERIAL PRIMARY KEY,
+    ref_ticket_no varchar(100),
+    id_pelanggan varchar(50),
+    billing_id varchar(100),
+    no_token varchar(50),
+    kwh_token numeric(15, 2),
+    denom_prepaid BIGINT,
+    daya varchar(50),
+    status_pengisian_token varchar(100),
+    foto_evidence_guuid varchar(255),
+    note text,
+    kwh_sebelum_pengisian numeric(15, 2),
+    foto_kwh_sebelum_pengisian_guuid varchar(255),
+    kwh_setelah_pengisian numeric(15, 2),
+    foto_kwh_setelah_pengisian_guuid varchar(255)
+);
+
+-- wfm_schema.tx_pengisian_token_listrik_header definition
+-- Drop table
+-- DROP TABLE wfm_schema.tx_pengisian_token_listrik_header;
+CREATE TABLE wfm_schema.tx_pengisian_token_listrik_header (
+    tx_pengisian_token_listrik_header_id SERIAL PRIMARY KEY,
+    ticket_no varchar(100),
+    ref_ticket_no_last varchar(100),
+    ticket_ipas_id varchar(100),
+    id_pelanggan varchar(50),
+    id_pelanggan_name varchar(100),
+    site_id varchar(25),
+    status varchar(100),
+    bulan int4,
+    tahun int4,
+    kwh_awal numeric(15, 2),
+    kwh_akhir numeric(15, 2),
+    tanggal_pengisian timestamp without time zone,
+    tanggal_pengisian_terakhir timestamp without time zone,
+    selisih_hari int4,
+    pemakaian_kwh_perhari numeric(15, 2),
+    estimasi_pengisian_selanjutnya timestamp without time zone,
+    total_kwh_token numeric(15, 2),
+    total_kwh_token_terakhir numeric(15, 2),
+    total_pengisian_kwh_token numeric(15, 2),
+    total_denom_prepaid int8,
+    daya_terpasang varchar(50),
+    created_by int4,
+    created_at timestamp without time zone,
+    take_over_by int4,
+    take_over_at timestamp without time zone,
+    request_permit_by int4,
+    request_permit_at timestamp without time zone,
+    follow_up_by int4,
+    follow_up_at timestamp without time zone,
+    checkin_by int4,
+    checkin_at timestamp without time zone,
+    submitted_by int4,
+    submitted_at timestamp without time zone,
+    approved_by int4,
+    approved_at timestamp without time zone,
+    acknowledge_nop_by int4,
+    acknowledge_nop_at timestamp without time zone,
+    acknowledge_nos_name varchar(255),
+    acknowledge_nos_at timestamp without time zone,
+    created_name varchar(150),
+    take_over_name varchar(150),
+    request_permit_name varchar(150),
+    follow_up_name varchar(150),
+    checkin_name varchar(150),
+    submitted_name varchar(150),
+    approved_name varchar(150),
+    acknowledge_nop_name varchar(150),
+    is_exclude boolean
+);
+
+-- wfm_schema.tx_pengisian_token_listrik definition
+-- Drop table
+-- DROP TABLE wfm_schema.tx_pengisian_token_listrik;
+CREATE TABLE wfm_schema.tx_pengisian_token_listrik (
+    tx_pengisian_token_listrik_id SERIAL PRIMARY KEY,
+    ref_ticket_no varchar(100),
+    id_pelanggan varchar(50),
+    billing_id varchar(100),
+    no_token varchar(50),
+    kwh_token numeric(15, 2),
+    denom_prepaid int8,
+    daya varchar(50),
+    kwh_sebelum_pengisian numeric(15, 2),
+    foto_kwh_sebelum_pengisian_guuid varchar(255),
+    kwh_setelah_pengisian numeric(15, 2),
+    foto_kwh_setelah_pengisian_guuid varchar(255),
+    status_pengisian_token varchar(100),
+    foto_evidence_guuid varchar(255),
+    note text
+);
+
+CREATE TABLE tm_power_pln_pelanggan_ipas (
+    tm_power_pln_pelanggan_ipas_id SERIAL PRIMARY KEY,
+    idpel VARCHAR(255),
+    pelname VARCHAR(255),
+    goltarif VARCHAR(255),
+    daya VARCHAR(255),
+    billtype VARCHAR(255),
+    plafond VARCHAR(255),
+    siteid VARCHAR(255),
+    sitename VARCHAR(255),
+    regional VARCHAR(255),
+    nsa VARCHAR(255),
+    rtpo VARCHAR(255),
+    statussite VARCHAR(255),
+    tower VARCHAR(255),
+    statusidpel VARCHAR(255),
+    tx_request_powerid BIGINT,
+    tm_powerid BIGINT,
+    area VARCHAR(255),
+    billresponsibility VARCHAR(255),
+    siteowner VARCHAR(255)
+);
