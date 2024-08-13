@@ -1,0 +1,16 @@
+[
+  "attendance_date",
+  "user_id",
+  "clock_in",
+  "clock_out",
+  "working_hour",
+  "username",
+  "employee_name",
+  "phone_number",
+  "area_id",
+  "area_name",
+  "regional_id",
+  "regional_name",
+  "cluster_id",
+  "cluster_name"
+]
