@@ -1,6 +1,7 @@
 SELECT
-    txa.absendate,
-    txa.userid,
+    concat(txa.userid, to_char(txa.absendate, 'ddmmyyyy')) as tx_attendance_id,
+    txa.absendate as attendance_date,
+    txa.userid as user_id,
     MIN(
         CASE
             WHEN txa.absentype = true THEN txa.absentime

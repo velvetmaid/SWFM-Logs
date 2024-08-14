@@ -1,5 +1,5 @@
+require("dotenv").config()
 const { Pool } = require("pg");
-require("dotenv").config();
 
   const poolA = new Pool({
     host: process.env.DB_A_HOST,

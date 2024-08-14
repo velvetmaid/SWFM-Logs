@@ -1,4 +1,5 @@
 [
+  "tx_attendance_id",
   "attendance_date",
   "user_id",
   "clock_in",
