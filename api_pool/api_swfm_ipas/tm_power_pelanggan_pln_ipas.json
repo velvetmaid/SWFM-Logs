@@ -1,0 +1,22 @@
+[
+  "tm_power_pln_pelanggan_ipas_id",
+  "idpel",
+  "pelname",
+  "goltarif",
+  "daya",
+  "billtype",
+  "plafond",
+  "siteid",
+  "sitename",
+  "regional",
+  "nsa",
+  "rtpo",
+  "statussite",
+  "tower",
+  "statusidpel",
+  "tx_request_powerid",
+  "tm_powerid",
+  "area",
+  "billresponsibility",
+  "siteowner"
+]
