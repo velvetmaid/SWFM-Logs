@@ -1,6 +1,46 @@
 const axios = require("axios");
 const { performance } = require("perf_hooks");
-const column = require("./tm_power_pelanggan_pln_ipas.json");
+const { poolSWFM } = require("./config");
+
+const col = [
+  "idpel", 
+  "pelname", 
+  "goltarif", 
+  "daya", 
+  "billtype", 
+  "plafond", 
+  "siteid", 
+  "sitename", 
+  "regional", 
+  "statussite", 
+  "tower", 
+  "statusidpel", 
+  "tx_request_powerid", 
+  "tm_powerid", 
+  "area", 
+  "billresponsibility", 
+  "siteowner"
+];
+
+const apiToDbMapping = {
+  IdPel: "idpel",
+  PelName: "pelname",
+  GolTarif: "goltarif",
+  Daya: "daya",
+  BillType: "billtype",
+  Plafond: "plafond",
+  SiteId: "siteid",
+  SiteName: "sitename",
+  Regional: "regional",
+  StatusSite: "statussite",
+  Tower: "tower",
+  StatusIdPel: "statusidpel",
+  Tx_Request_PowerId: "tx_request_powerid",
+  Tm_PowerId: "tm_powerid",
+  Area: "area",
+  BillResponsibility: "billresponsibility",
+  SiteOwner: "siteowner"
+};
 
 const data = {
   Tm_RegionalId: "",
@@ -11,14 +51,15 @@ const data = {
   BillTypeId: "",
   siteownershipID: "",
   StartIndex: 0,
-  MaxRecordDropdown: 2,
+  MaxRecordDropdown: 10,
   SerchIdPel: "",
   TowerProviderId: "",
   SearchSiteID: "",
   BillResponsibilityId: "",
 };
 
-async function fetchData() {
+(async () => {
+  const clientA = await poolSWFM();
   try {
     const startA = performance.now();
     const response = await axios.post(
@@ -26,10 +67,53 @@ async function fetchData() {
       data
     );
     const endA = performance.now();
-    console.log(response.data);
+    const resultA = response.data;
+
+    console.log("API Response:", JSON.stringify(resultA, null, 2));
+
+    const rows = resultA;
+
+    if (rows.length === 0) {
+      console.log("No data received from API.");
+      return;
+    }
+
     console.log(`Executed in ${Math.round(endA - startA)} ms`);
+
+    const numParams = col.length;
+    const placeholders = Array.from(
+      { length: numParams },
+      (_, i) => `$${i + 1}`
+    ).join(", ");
+
+    const insertOrUpdateFNA = `
+      INSERT INTO wfm_schema.tm_power_pln_pelanggan_ipas (${col.join(", ")})
+      VALUES (${placeholders})
+      ON CONFLICT (tm_powerid)
+      DO UPDATE SET ${col
+        .map((col) => `${col} = EXCLUDED.${col}`)
+        .join(", ")};
+    `;
+
+    const startB = performance.now();
+    for (const row of rows) {
+      const params = col.map((col) => row[Object.keys(apiToDbMapping).find(key => apiToDbMapping[key] === col)]);
+
+      console.log("Executing query with params:", params);
+      const result = await clientA.query(insertOrUpdateFNA, params);
+      console.log("Query result:", result);
+    }
+    const endB = performance.now();
+    console.log(
+      `Insert/Update Power PLN IPAS queries executed in ${Math.round(
+        endB - startB
+      )} ms`
+    );
+
+    console.log("Data seed successfully!");
   } catch (error) {
-    console.log(error);
+    console.log("Error:", error);
+  } finally {
+    await clientA.end();
   }
-}
-fetchData();
+})();
