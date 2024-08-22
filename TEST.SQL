@@ -334,6 +334,11 @@ CREATE TABLE wfm_schema.tx_recap_pln (
     foto_checkpanel_distribusi_utama_name varchar(255),
     foto_checkpanel_distribusi_utama_location varchar(255),
 
+    teg_phase_netral numeric(10, 2),
+    foto_teg_phase_netral_guuid varchar(255),
+    total_arus_phase numeric(10, 2),
+    foto_total_arus_phase_guuid varchar(255),
+
     teg_phase_rn numeric(10, 2),
     foto_teg_phase_rn bytea,
     foto_teg_phase_rn_name varchar(255),
