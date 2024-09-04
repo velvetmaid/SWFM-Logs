@@ -22,6 +22,7 @@ const col = [
   "siteowner"
 ];
 
+// Mapping API keys to database columns
 const apiToDbMapping = {
   IdPel: "idpel",
   PelName: "pelname",
@@ -42,6 +43,16 @@ const apiToDbMapping = {
   SiteOwner: "siteowner"
 };
 
+// Utility function to sanitize numeric fields
+function sanitizeNumber(value) {
+  if (typeof value === 'string') {
+    // Remove non-numeric characters
+    const sanitizedValue = value.replace(/[^\d]/g, '');
+    return sanitizedValue ? parseFloat(sanitizedValue) : null;
+  }
+  return value;
+}
+
 const data = {
   Tm_RegionalId: "",
   Tm_AreaId: null,
@@ -51,7 +62,7 @@ const data = {
   BillTypeId: "",
   siteownershipID: "",
   StartIndex: 0,
-  MaxRecordDropdown: 1000000,
+  MaxRecordDropdown: 10,
   SerchIdPel: "",
   TowerProviderId: "",
   SearchSiteID: "",
@@ -59,7 +70,7 @@ const data = {
 };
 
 (async () => {
-  const clientA = await poolSWFM();
+  const clientA = await poolSWFM(); // Connect to the database
   try {
     const startA = performance.now();
     const response = await axios.post(
@@ -71,11 +82,11 @@ const data = {
 
     console.log("API Response:", JSON.stringify(resultA, null, 2));
 
-    const rows = resultA;
+    const rows = resultA; // The response seems to be an array
 
     if (rows.length === 0) {
       console.log("No data received from API.");
-      return;
+      return; // Exit if no data
     }
 
     console.log(`Executed in ${Math.round(endA - startA)} ms`);
@@ -97,8 +108,14 @@ const data = {
 
     const startB = performance.now();
     for (const row of rows) {
-      const params = col.map((col) => row[Object.keys(apiToDbMapping).find(key => apiToDbMapping[key] === col)]);
+      // Sanitize numeric fields
+      const sanitizedRow = { ...row };
+      sanitizedRow.daya = sanitizeNumber(row.Daya);
+      sanitizedRow.plafond = sanitizeNumber(row.Plafond);
 
+      const params = col.map((col) => sanitizedRow[Object.keys(apiToDbMapping).find(key => apiToDbMapping[key] === col)]);
+
+      // Log the query and params before execution
       console.log("Executing query with params:", params);
       const result = await clientA.query(insertOrUpdateFNA, params);
       console.log("Query result:", result);
@@ -114,6 +131,6 @@ const data = {
   } catch (error) {
     console.log("Error:", error);
   } finally {
-    await clientA.end();
+    await clientA.end(); // Close the database connection
   }
 })();
