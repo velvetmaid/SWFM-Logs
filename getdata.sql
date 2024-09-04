@@ -33,10 +33,34 @@ FROM
 WHERE
     a.is_active = TRUE
     AND a.is_delete = FALSE
-    AND (
-        t.code = 'MUSERTS'
-        OR t.code = 'MUSERMBP'
-    )
+GROUP BY
+    a.employee_name,
+    a.email,
+    b.area_name,
+    c.regional_name,
+    d.nop_name,
+    e.cluster_name;
+
+-- User Web
+SELECT
+    a.employee_name,
+    a.email,
+    b.area_name,
+    c.regional_name,
+    d.nop_name,
+    e.cluster_name,
+    string_agg(DISTINCT t.name :: text, ', ' :: text) AS role_name
+FROM
+    wfm_schema.tx_user_management a
+    LEFT JOIN wfm_schema.tm_area b ON a.area_id = b.area_id
+    LEFT JOIN wfm_schema.tm_regional c ON a.regional_id = c.regional_id
+    LEFT JOIN wfm_schema.tm_nop d ON a.nop_id = d.nop_id
+    LEFT JOIN wfm_schema.tm_cluster e ON a.cluster_id = e.cluster_id
+    INNER JOIN wfm_schema.tx_user_role tu ON a.ref_user_id = tu.ref_user_id
+    INNER JOIN wfm_schema.tm_user_role t ON tu.role_id = t.tm_user_role_id
+WHERE
+    a.is_active = TRUE
+    AND a.is_delete = FALSE
 GROUP BY
     a.employee_name,
     a.email,
