@@ -6,7 +6,7 @@ cron.schedule("40 03 17 * * *", async () => {
     .toString()
     .replace(/T/, ":")
     .replace(/\.\w*/, "");
-    
+
   console.log("Cron job started at " + currentTime);
   await processFNA();
 });
