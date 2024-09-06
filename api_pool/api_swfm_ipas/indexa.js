@@ -3,23 +3,23 @@ const { performance } = require("perf_hooks");
 const { poolSWFM } = require("./config");
 
 const col = [
-  "idpel", 
-  "pelname", 
-  "goltarif", 
-  "daya", 
-  "billtype", 
-  "plafond", 
-  "siteid", 
-  "sitename", 
-  "regional", 
-  "statussite", 
-  "tower", 
-  "statusidpel", 
-  "tx_request_powerid", 
-  "tm_powerid", 
-  "area", 
-  "billresponsibility", 
-  "siteowner"
+  "idpel",
+  "pelname",
+  "goltarif",
+  "daya",
+  "billtype",
+  "plafond",
+  "siteid",
+  "sitename",
+  "regional",
+  "statussite",
+  "tower",
+  "statusidpel",
+  "tx_request_powerid",
+  "tm_powerid",
+  "area",
+  "billresponsibility",
+  "siteowner",
 ];
 
 // Mapping API keys to database columns
@@ -40,14 +40,14 @@ const apiToDbMapping = {
   Tm_PowerId: "tm_powerid",
   Area: "area",
   BillResponsibility: "billresponsibility",
-  SiteOwner: "siteowner"
+  SiteOwner: "siteowner",
 };
 
 // Utility function to sanitize numeric fields
 function sanitizeNumber(value) {
-  if (typeof value === 'string') {
+  if (typeof value === "string") {
     // Remove non-numeric characters
-    const sanitizedValue = value.replace(/[^\d]/g, '');
+    const sanitizedValue = value.replace(/[^\d]/g, "");
     return sanitizedValue ? parseFloat(sanitizedValue) : null;
   }
   return value;
@@ -62,14 +62,14 @@ const data = {
   BillTypeId: "",
   siteownershipID: "",
   StartIndex: 0,
-  MaxRecordDropdown: 10,
+  MaxRecordDropdown: 100000,
   SerchIdPel: "",
   TowerProviderId: "",
   SearchSiteID: "",
   BillResponsibilityId: "",
 };
 
-(async () => {
+async function process() {
   const clientA = await poolSWFM(); // Connect to the database
   try {
     const startA = performance.now();
@@ -101,9 +101,7 @@ const data = {
       INSERT INTO wfm_schema.tm_power_pln_pelanggan_ipas (${col.join(", ")})
       VALUES (${placeholders})
       ON CONFLICT (tm_powerid)
-      DO UPDATE SET ${col
-        .map((col) => `${col} = EXCLUDED.${col}`)
-        .join(", ")};
+      DO UPDATE SET ${col.map((col) => `${col} = EXCLUDED.${col}`).join(", ")};
     `;
 
     const startB = performance.now();
@@ -113,7 +111,14 @@ const data = {
       sanitizedRow.daya = sanitizeNumber(row.Daya);
       sanitizedRow.plafond = sanitizeNumber(row.Plafond);
 
-      const params = col.map((col) => sanitizedRow[Object.keys(apiToDbMapping).find(key => apiToDbMapping[key] === col)]);
+      const params = col.map(
+        (col) =>
+          sanitizedRow[
+            Object.keys(apiToDbMapping).find(
+              (key) => apiToDbMapping[key] === col
+            )
+          ]
+      );
 
       // Log the query and params before execution
       console.log("Executing query with params:", params);
@@ -133,4 +138,6 @@ const data = {
   } finally {
     await clientA.end(); // Close the database connection
   }
-})();
+}
+// module.exports = process;
+process();
