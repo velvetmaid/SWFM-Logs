@@ -1,0 +1,33 @@
+[
+  {
+    "Localtm_asset_detail": {
+      "asset_detail_id": 326945,
+      "asset_header_id": 0,
+      "assetproperties_name": "Ketinggian",
+      "value": "90",
+      "unit": "meter",
+      "description": "BJI071",
+      "index": 1,
+      "datatype": "Number",
+      "code": "ketinggian",
+      "key": 1,
+      "tm_asset_header_guid": "16ccb469-5688-407d-a0be-ec9879591ea2",
+      "tm_asset_detail_guid": "9c732405-da75-4d19-b3c8-87ea65881319"
+    }
+  },
+  {
+    "Localtm_asset_detail": {
+      "asset_detail_id": 326946,
+      "asset_header_id": 0,
+      "assetproperties_name": "Status",
+      "value": "Non Active",
+      "description": "BJI071",
+      "index": 2,
+      "datatype": "Selection",
+      "code": "status",
+      "key": 2,
+      "tm_asset_header_guid": "16ccb469-5688-407d-a0be-ec9879591ea2",
+      "tm_asset_detail_guid": "b6708e8d-c84d-4275-b90d-e9a616ec5ba1"
+    }
+  }
+]

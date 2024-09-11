@@ -320,7 +320,7 @@ WITH availabillity_ticket AS (
         string_agg(
             DISTINCT ttto.ticket_no :: text,
             ', ' :: text
-        ) AS tx_ticket_terr_opr_ticket_no,
+        ) AS ticket_no,
         CASE
             WHEN COUNT(ttto.ticket_no) > 0 THEN 'Not Available' :: text
             ELSE 'Available' :: text
@@ -335,7 +335,7 @@ WITH availabillity_ticket AS (
 )
 SELECT
     tx_user_mobile_management_id,
-    tx_ticket_terr_opr_ticket_no,
+    ticket_no,
     availability_status
 FROM
     availabillity_ticket;
@@ -381,7 +381,7 @@ WITH ranked_absen AS (
     FROM
         wfm_schema.tx_absen
 )
-SELECT
+row_ranked_absen SELECT
     userid,
     absentype,
     rank_amount

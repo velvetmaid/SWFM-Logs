@@ -1,5 +1,5 @@
 const cron = require("node-cron");
-const process = require("./indexa");
+const processSeed = require("./indexa");
 
 cron.schedule("10 44 09 * * *", async () => {
   const currentTime = new Date()
@@ -8,5 +8,5 @@ cron.schedule("10 44 09 * * *", async () => {
     .replace(/\.\w*/, "");
 
   console.log("Cron job started at " + currentTime);
-  await process();
+  await processSeed();
 });

@@ -69,7 +69,7 @@ const data = {
   BillResponsibilityId: "",
 };
 
-async function process() {
+async function processSeed() {
   const clientA = await poolSWFM(); // Connect to the database
   try {
     const startA = performance.now();
@@ -139,5 +139,5 @@ async function process() {
     await clientA.end(); // Close the database connection
   }
 }
-// module.exports = process;
-process();
+// module.exports = processSeed;
+processSeed();
