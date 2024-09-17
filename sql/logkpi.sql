@@ -35,7 +35,6 @@ on tktv.kpi_header = tkhv.id
 left join wfm_schema.tx_kpi_detail_v2 tkdv
 on tkdv.tx_kpi_type = tktv.id
 where tkdv.kpi_header = 'd75ed44e-b5e5-4b6f-8714-6e650f490b5e'
-and (tktv.status = 'DRAFT' or tktv.status = 'REJECT')
 
 select * from wfm_schema.tx_kpi_detail_v2 tkdv 
 where kpi_header = 'd75ed44e-b5e5-4b6f-8714-6e650f490b5e'
@@ -51,3 +50,15 @@ select * from wfm_schema.tx_recap_pln trp
 inner join wfm_schema.tx_site ts
 on trp.site_id = ts.site_id 
 where ts.nop_id = 'NOP1'
+
+select * from wfm_schema.tx_kpi_detail_v2 tkdv 
+where kpi_header = 'd75ed44e-b5e5-4b6f-8714-6e650f490b5e'
+
+select * from wfm_schema.tx_kpi_detail_listdata_v2 tkdlv 
+
+select * from wfm_schema.tx_kpi_detail_v2 tkdv 
+left join wfm_schema.tx_kpi_detail_listdata_v2 tkdlv 
+on tkdv.id = tkdlv.tx_kpi_detail 
+where tkdv.kpi_header = 'd75ed44e-b5e5-4b6f-8714-6e650f490b5e'
+
+select * from wfm_schema.tx_recap_pln trp 
