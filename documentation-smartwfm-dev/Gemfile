@@ -1,8 +1,0 @@
-source "https://rubygems.org"
-
-## run at gh
-gem 'github-pages'
-
-## run local
-# gem 'wdm'
-# gem 'jekyll'
