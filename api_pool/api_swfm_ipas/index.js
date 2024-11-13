@@ -86,7 +86,7 @@ const data = {
       (_, i) => `$${i + 1}`
     ).join(", ");
 
-    const insertOrUpdateFNA = `
+    const insertOrUpdateQuery = `
       INSERT INTO wfm_schema.tm_power_pln_pelanggan_ipas (${col.join(", ")})
       VALUES (${placeholders})
       ON CONFLICT (tm_powerid)
@@ -100,7 +100,7 @@ const data = {
       const params = col.map((col) => row[Object.keys(apiToDbMapping).find(key => apiToDbMapping[key] === col)]);
 
       console.log("Executing query with params:", params);
-      const result = await clientA.query(insertOrUpdateFNA, params);
+      const result = await clientA.query(insertOrUpdateQuery, params);
       console.log("Query result:", result);
     }
     const endB = performance.now();

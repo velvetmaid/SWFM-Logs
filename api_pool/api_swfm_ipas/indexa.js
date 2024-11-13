@@ -62,7 +62,7 @@ const data = {
   BillTypeId: "",
   siteownershipID: "",
   StartIndex: 0,
-  MaxRecordDropdown: 100000,
+  MaxRecordDropdown: 1000000,
   SerchIdPel: "",
   TowerProviderId: "",
   SearchSiteID: "",
@@ -97,7 +97,7 @@ async function processSeed() {
       (_, i) => `$${i + 1}`
     ).join(", ");
 
-    const insertOrUpdateFNA = `
+    const insertOrUpdateQuery = `
       INSERT INTO wfm_schema.tm_power_pln_pelanggan_ipas (${col.join(", ")})
       VALUES (${placeholders})
       ON CONFLICT (tm_powerid)
@@ -122,7 +122,7 @@ async function processSeed() {
 
       // Log the query and params before execution
       console.log("Executing query with params:", params);
-      const result = await clientA.query(insertOrUpdateFNA, params);
+      const result = await clientA.query(insertOrUpdateQuery, params);
       console.log("Query result:", result);
     }
     const endB = performance.now();
