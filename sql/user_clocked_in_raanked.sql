@@ -42,7 +42,7 @@ FROM
             (
                 (
                     (
-                        wfm_schema.vw_user_mobile_absent_location_rank vumalr
+                        wfm_schema.tx_absen vumalr
                         INNER JOIN wfm_schema.tx_user_mobile_management tumm ON (
                             vumalr.userid = tumm.tx_user_mobile_management_id
                         )
@@ -77,4 +77,39 @@ GROUP BY
     tr.regional_name,
     tumm.regional_id,
     vumalr.userid,
-    tumm.nop_id
+    tumm.nop_id;
+
+-- 
+-- 
+-- 
+WITH ranked_absences AS (
+    SELECT
+        tx_absen.id,
+        tx_absen.absendate,
+        tx_absen.absentype,
+        tx_absen.userid,
+        tx_absen.absentime,
+        row_number() OVER (
+            PARTITION BY tx_absen.userid,
+            tx_absen.absendate
+            ORDER BY
+                tx_absen.absentime
+        ) AS rankasc,
+        row_number() OVER (
+            PARTITION BY tx_absen.userid,
+            tx_absen.absendate
+            ORDER BY
+                tx_absen.absentime DESC
+        ) AS rankdesc
+    FROM
+        wfm_schema.tx_absen
+)
+SELECT
+    *
+FROM
+    ranked_absences ra
+WHERE
+    ra.rankasc = 1
+    AND ra.absentype = true
+    OR ra.rankdesc = 1
+    AND ra.absentype = false;
