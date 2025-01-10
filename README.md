@@ -1,11 +1,10 @@
-# WFM_Conf
+# SWFM Logs
 
-For storing temporary files such as logs and discarded configurations that might be needed again in the future.
+This repository is used to store temporary files such as logs and discarded configurations that might be needed again in the future.
 
 ## Purpose
 
-This repository serves as a **backup storage** for:
-
+This repository serves as a **backup repository** for:
 - Logs from various SmartWFM processes.
 - Old or discarded configuration files.
 - Temporary or obsolete data that might be referenced later.
