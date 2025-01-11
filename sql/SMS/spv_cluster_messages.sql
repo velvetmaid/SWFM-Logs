@@ -1,6 +1,7 @@
--- wfm_schema.vw_message_spv_to_cluster source
+-- View to get message for SPV to cluster
 CREATE
 OR REPLACE VIEW wfm_schema.vw_message_spv_to_cluster AS WITH ranked_spv_to AS (
+    -- Select distinct phone numbers and cluster IDs for active SPV TO users
     SELECT
         DISTINCT a.phone_number,
         a.cluster_id,
@@ -17,6 +18,7 @@ OR REPLACE VIEW wfm_schema.vw_message_spv_to_cluster AS WITH ranked_spv_to AS (
         AND a.cluster_id <> 0
 ),
 clock_in_out_intervals AS (
+    -- Calculate first clock-in and last clock-out times for each user
     SELECT
         tx_absen.userid,
         min(
@@ -39,6 +41,7 @@ clock_in_out_intervals AS (
         tx_absen.userid
 ),
 intervals_calculated AS (
+    -- Calculate hours worked for each user based on clock-in and clock-out times
     SELECT
         clock_in_out_intervals.userid,
         clock_in_out_intervals.first_in_time,
@@ -53,6 +56,7 @@ intervals_calculated AS (
         clock_in_out_intervals
 ),
 ranked_staff_to AS (
+    -- Rank staff members and determine their clock status
     SELECT
         DISTINCT ON (a.employee_name) a.employee_name AS staffname,
         dense_rank() OVER (
@@ -88,6 +92,7 @@ ranked_staff_to AS (
         ic.first_in_time
 ),
 ticket_info AS (
+    -- Count tickets based on their status for each PIC
     SELECT
         tx_ticket_terr_opr.pic_id,
         count(
@@ -122,6 +127,7 @@ ticket_info AS (
         tx_ticket_terr_opr.pic_id
 ),
 ticket_total_count AS (
+    -- Count total tickets based on their status for each cluster
     SELECT
         b.cluster_id,
         count(
@@ -245,7 +251,7 @@ ORDER BY
     ranked_spv_to.phone_number,
     ranked_spv_to.cluster_name;
 
--- wfm_schema.vw_message_spv_to source
+-- View to get message for SPV
 CREATE
 OR REPLACE VIEW wfm_schema.vw_message_spv_to AS
 SELECT
