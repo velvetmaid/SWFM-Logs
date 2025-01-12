@@ -1,19 +1,15 @@
-let originalText = "Loading",
-  loadingElement = document.createElement("p"),
-  a = 0;
-
-loadingElement.innerText = originalText;
-document.body.appendChild(loadingElement);
-
-setInterval(function () {
-  loadingElement.append(".");
-  i++;
-
-  if (i === 4) {
-    loadingElement.innerText = originalText;
-    i = 0;
-  }
-}, 250);
+function getWeekNumber(date) {
+  // Copy date so don't modify original
+  date = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  // Set to nearest Thursday: current date + 4 - current day number
+  // Make Sunday's day number 7
+  date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7));
+  // Get first day of year
+  var yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+  // Calculate full weeks to nearest Thursday
+  var weekNumber = Math.ceil(((date - yearStart) / 86400000 + 1) / 7);
+  return weekNumber;
+}
 
 // Without element
 let onlyText = "Loading";
@@ -22,11 +18,11 @@ let x = 0;
 
 setInterval(function () {
   loadingText += ".";
-  i++;
+  x++;
 
-  if (i === 4) {
+  if (x === 4) {
     loadingText = onlyText;
-    i = 0;
+    x = 0;
   }
 
   console.log(loadingText);
@@ -103,10 +99,7 @@ function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
   var d = R * c; // Distance in km
   return d;
-  console.log(dLat, dLon);
 }
-getDistanceFromLatLonInKm();
-
 function deg2rad(deg) {
-  return deg * (Math.PI/180)
+  return deg * (Math.PI/180);
 }

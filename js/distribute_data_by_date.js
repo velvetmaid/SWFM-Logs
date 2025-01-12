@@ -1,53 +1,32 @@
 function getStartDate() {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = 0;
-    return new Date(year, month, 20);
+    return new Date(new Date().getFullYear(), 0, 20);
 }
 
 function getEndDate() {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = 0;
-    
-    let endYear = year;
-    let endMonth = month + 1;
-    
-    if (endMonth > 11) {
-        endYear += 1;
-        endMonth = 0; // Januari
-    }
-
-    return new Date(endYear, endMonth, 19);
+    const endDate = new Date(new Date().getFullYear(), 1, 19);
+    return endDate;
 }
 
 function generateDateRange(startDate, endDate) {
     const dateArray = [];
-    let currentDate = new Date(startDate);
-    
-    while (currentDate <= endDate) {
-        dateArray.push(new Date(currentDate));
-        currentDate.setDate(currentDate.getDate() + 1);
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+        dateArray.push(new Date(d));
     }
-    
     return dateArray;
 }
 
 function distributeDataEvenly(totalData, dateRange) {
     const dataPerDay = Math.floor(totalData / dateRange.length);
     const remainder = totalData % dateRange.length;
-    const distribution = dateRange.map((date, index) => ({
+    return dateRange.map((date, index) => ({
         date,
         data: dataPerDay + (index < remainder ? 1 : 0)
     }));
-    
-    return distribution;
 }
 
 const startDate = getStartDate();
 const endDate = getEndDate();
 const dateRange = generateDateRange(startDate, endDate);
-
 const totalData = 100;
 const distributedData = distributeDataEvenly(totalData, dateRange);
 
