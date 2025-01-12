@@ -1,5 +1,5 @@
 const cron = require("node-cron");
-const processSeed = require("./indexa");
+const processSeed = require("./ipasDataSync");
 
 cron.schedule("10 44 09 * * *", async () => {
   const currentTime = new Date()
