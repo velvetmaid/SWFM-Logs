@@ -320,3 +320,32 @@ combined_ticket.status,
 combined_ticket.created_at,
 combined_ticket.take_over_at,
 combined_ticket.checkin_at
+
+-- Query 8: ticket status from multiple ticket
+SELECT
+    UPPER(status_ticket.status)
+    -- status_ticket.source
+FROM (
+    SELECT 
+        DISTINCT inap.status, 
+        'INAP' AS source
+    FROM {tx_ticket_terr_opr} inap
+    UNION ALL
+    SELECT 
+        DISTINCT sva.status,
+        'SVA' AS source
+    FROM {tx_cmsite_header} sva
+    UNION ALL
+    SELECT 
+        DISTINCT pm.status,
+        'PM' AS source
+    FROM {tx_pm_ticket_site} pm
+    UNION ALL
+    SELECT 
+        fna.status,
+        'FNA' AS source
+    FROM {ticket_technical_support} fna 
+) AS status_ticket
+WHERE status_ticket.status <> '' AND (status_ticket.source = @Category OR @Category = '')
+GROUP BY status_ticket.status
+ORDER BY status_ticket.status
