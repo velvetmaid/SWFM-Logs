@@ -1,3 +1,34 @@
+select * from wfm_schema.tm_kpi_group_v2 tkgv;
+
+select * from wfm_schema.tm_kpi_sow_v2 tksv;
+
+-- Get KPI list (looping in sync: KPI_SyncDataById)
+SELECT
+    *
+FROM
+    wfm_schema.tx_kpi_header_v2 kpi_header
+    LEFT JOIN wfm_schema.tx_kpi_type_v2 kpi_type ON kpi_type.kpi_header = kpi_header.id
+    LEFT JOIN wfm_schema.tx_kpi_detail_v2 kpi_detail ON kpi_detail.tx_kpi_type = kpi_type.id
+WHERE
+    kpi_header.status = 'DRAFT'
+    OR kpi_header.status = 'REJECT'
+    AND kpi_type.code = 'PLN'
+ORDER BY
+    kpi_detail.tx_kpi_group ASC,
+    kpi_detail.seq ASC;
+
+select * from wfm_schema.tx_kpi_detail_v2 detail
+left join wfm_schema.tx_kpi_detail_listdata_v2 detail_list
+on detail.id = detail_list.tx_kpi_detail 
+where detail.kpi_header = '' and detail.tm_kpi_sow = 0
+
+-- Get KPI SOW & Group PLN
+select * from wfm_schema.tm_kpi_sow_v2 tksv
+left join wfm_schema.tm_kpi_group_v2 tkgv 
+on tksv.kpi_group = tkgv.id 
+where tkgv.id = 4;
+
+
 select * from wfm_schema.tx_kpi_header_v2 tkhv 
 where month_period = 7 and year_period = 2024;
 
