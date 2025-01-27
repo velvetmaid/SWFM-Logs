@@ -1,6 +1,12 @@
-select * from wfm_schema.tm_kpi_group_v2 tkgv;
+select
+    *
+from
+    wfm_schema.tm_kpi_group_v2 tkgv;
 
-select * from wfm_schema.tm_kpi_sow_v2 tksv;
+select
+    *
+from
+    wfm_schema.tm_kpi_sow_v2 tksv;
 
 -- Get KPI list (looping in sync: KPI_SyncDataById)
 SELECT
@@ -17,38 +23,100 @@ ORDER BY
     kpi_detail.tx_kpi_group ASC,
     kpi_detail.seq ASC;
 
-select * from wfm_schema.tx_kpi_detail_v2 detail
-left join wfm_schema.tx_kpi_detail_listdata_v2 detail_list
-on detail.id = detail_list.tx_kpi_detail 
-where detail.kpi_header = '' and detail.tm_kpi_sow = 0
+-- Get tx KPI Type
+select
+    *
+from
+    wfm_schema.tx_kpi_type_v2 xtype
+    left join wfm_schema.tm_kpi_type_v2 mtype on xtype.tm_kpi_type = mtype.id
+where
+    mtype.type_kpi_code = 'PLN';
 
--- Get KPI SOW & Group PLN
-select * from wfm_schema.tm_kpi_sow_v2 tksv
-left join wfm_schema.tm_kpi_group_v2 tkgv 
-on tksv.kpi_group = tkgv.id 
-where tkgv.id = 4;
+-- Get list of type KPI code
+select distinct
+    (mtype.type_kpi_code)
+from
+    wfm_schema.tx_kpi_type_v2 xtype
+    left join wfm_schema.tm_kpi_type_v2 mtype on xtype.tm_kpi_type = mtype.id;
 
+-- Get KPI that has been LOCKED
+-- Status: PENDING
+select
+    *
+from
+    wfm_schema.tx_kpi_type_v2 xtype
+    left join wfm_schema.tm_kpi_type_v2 mtype on xtype.tm_kpi_type = mtype.id
+    inner join wfm_schema.tx_kpi_header_v2 kpiheader on xtype.kpi_header = kpiheader.id
+where
+    mtype.type_kpi_code = 'PLN'
+    and xtype.status = 'LOCKED'
+    and kpiheader.year_period = 2024
+    and kpiheader.month_period between 7 and 10
+order by
+    xtype.id asc,
+    kpiheader.month_period asc
+    -- Get KPI detail list data
+select
+    *
+from
+    wfm_schema.tx_kpi_detail_v2 detail
+    left join wfm_schema.tx_kpi_detail_listdata_v2 detail_list on detail.id = detail_list.tx_kpi_detail
+where
+    detail.tm_kpi_sow = 34;
 
-select * from wfm_schema.tx_kpi_header_v2 tkhv 
-where month_period = 7 and year_period = 2024;
+-- Get KPI detail list data with header id
+select
+    *
+from
+    wfm_schema.tx_kpi_detail_v2 detail
+    left join wfm_schema.tx_kpi_detail_listdata_v2 detail_list on detail.id = detail_list.tx_kpi_detail
+    inner join wfm_schema.tx_kpi_header_v2 header on detail.kpi_header = header.id
+where
+    detail.tm_kpi_sow = 34;
 
-select * from wfm_schema.tx_kpi_group_v2 tkgv; 
+-- Get KPI SOW & group PLN 
+-- Status: Done
+select
+    *
+from
+    wfm_schema.tm_kpi_sow_v2 tksv
+    left join wfm_schema.tm_kpi_group_v2 tkgv on tksv.kpi_group = tkgv.id
+where
+    tkgv.id = 4;
 
-select tkgv.*, tkhv.*, tktv.* from wfm_schema.tx_kpi_group_v2 tkgv 
-inner join wfm_schema.tx_kpi_header_v2 tkhv 
-on tkgv.kpi_header = tkhv.id 
-inner join wfm_schema.tx_kpi_type_v2 tktv 
-on tkgv.tx_kpi_type = tktv.id;
+select
+    *
+from
+    wfm_schema.tx_kpi_header_v2 tkhv
+where
+    month_period = 7
+    and year_period = 2024;
 
-select * from wfm_schema.tx_kpi_type_v2 tktv 
-inner join wfm_schema.tx_kpi_header_v2 tkhv 
-on tktv.kpi_header = tkhv.id 
-inner join wfm_schema.tx_kpi_group_v2 tkgv 
-on tkgv.kpi_header = tkhv.id 
-where tktv.code = 'PLN' and tkhv.month_period = 7 and tkhv.year_period = 2024
+select
+    *
+from
+    wfm_schema.tx_kpi_group_v2 tkgv;
 
---
+select
+    tkgv.*,
+    tkhv.*,
+    tktv.*
+from
+    wfm_schema.tx_kpi_group_v2 tkgv
+    inner join wfm_schema.tx_kpi_header_v2 tkhv on tkgv.kpi_header = tkhv.id
+    inner join wfm_schema.tx_kpi_type_v2 tktv on tkgv.tx_kpi_type = tktv.id;
 
+select
+    *
+from
+    wfm_schema.tx_kpi_type_v2 tktv
+    inner join wfm_schema.tx_kpi_header_v2 tkhv on tktv.kpi_header = tkhv.id
+    inner join wfm_schema.tx_kpi_group_v2 tkgv on tkgv.kpi_header = tkhv.id
+where
+    tktv.code = 'PLN'
+    and tkhv.month_period = 7
+    and tkhv.year_period = 2024
+    --
 select
     *
 from
