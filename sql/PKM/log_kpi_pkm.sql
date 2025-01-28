@@ -39,8 +39,26 @@ from
     wfm_schema.tx_kpi_type_v2 xtype
     left join wfm_schema.tm_kpi_type_v2 mtype on xtype.tm_kpi_type = mtype.id;
 
+select distinct
+    (status)
+from
+    wfm_schema.tx_kpi_type_v2;
+
+-- Count LOCKED xtype status
+select
+    count(*)
+from
+    wfm_schema.tx_kpi_type_v2 xtype
+    left join wfm_schema.tm_kpi_type_v2 mtype on xtype.tm_kpi_type = mtype.id
+    inner join wfm_schema.tx_kpi_header_v2 kpiheader on xtype.kpi_header = kpiheader.id
+where
+    mtype.type_kpi_code = 'PLN'
+    and xtype.status = 'LOCKED'
+    and kpiheader.year_period = 2024
+    and kpiheader.month_period between 7 and 10;
+
 -- Get KPI that has been LOCKED
--- Status: PENDING
+-- Status: DONE
 select
     *
 from
@@ -54,8 +72,28 @@ where
     and kpiheader.month_period between 7 and 10
 order by
     xtype.id asc,
-    kpiheader.month_period asc
-    -- Get KPI detail list data
+    kpiheader.month_period asc;
+
+-- Update LOCKED PLN KPI to DRAFT
+-- Status: DONE
+UPDATE wfm_schema.tx_kpi_type_v2
+SET
+    status = 'DRAFT'
+WHERE
+    tm_kpi_type IN (
+        SELECT
+            mtype.id
+        FROM
+            wfm_schema.tm_kpi_type_v2 mtype
+            INNER JOIN wfm_schema.tx_kpi_header_v2 kpiheader ON wfm_schema.tx_kpi_type_v2.kpi_header = kpiheader.id
+        WHERE
+            mtype.type_kpi_code = 'PLN'
+            AND wfm_schema.tx_kpi_type_v2.status = 'LOCKED'
+            AND kpiheader.year_period = 2024
+            AND kpiheader.month_period BETWEEN 7 AND 10
+    );
+
+-- Get KPI detail list data
 select
     *
 from
@@ -73,6 +111,63 @@ from
     inner join wfm_schema.tx_kpi_header_v2 header on detail.kpi_header = header.id
 where
     detail.tm_kpi_sow = 34;
+
+select
+    *
+from
+    wfm_schema.tx_kpi_type_v2 xtype
+    left join wfm_schema.tm_kpi_type_v2 mtype on xtype.tm_kpi_type = mtype.id
+where
+    mtype.type_kpi_code = 'PLN';
+
+select
+    *
+from
+    wfm_schema.tm_kpi_group_v2 tkgv;
+
+select
+    *
+from
+    wfm_schema.tx_kpi_type_v2 tktv;
+
+-- Get KPI tx group by type code 
+-- (Combined: GetKPIGroup & GetKPIType)
+select
+    *
+from
+    wfm_schema.tx_kpi_group_v2 xgroup
+    inner join wfm_schema.tx_kpi_header_v2 xheader on xgroup.kpi_header = xheader.id
+    inner join wfm_schema.tx_kpi_type_v2 xtype on xgroup.tx_kpi_type = xtype.id
+    left join wfm_schema.tm_kpi_type_v2 mtype on xtype.tm_kpi_type = mtype.id
+where
+    mtype.type_kpi_code = 'PLN'
+    and (xheader.month_period between 7 and 10)
+    and xheader.year_period = 2024;
+
+-- Update optional config for KPI group based on type code
+-- (Combined: GetKPIGroup & GetKPIType)
+-- Status: Done
+UPDATE wfm_schema.tx_kpi_group_v2 xgroup
+SET
+    optional_config = '{"code":"PLN", "isEnableTotal":"False", "isEnableTarget":"True"}'
+FROM
+    (
+        SELECT
+            xgroup.id as xgroup_id,
+            xgroup.kpi_header,
+            xgroup.tx_kpi_type
+        FROM
+            wfm_schema.tx_kpi_group_v2 xgroup
+            INNER JOIN wfm_schema.tx_kpi_header_v2 xheader ON xgroup.kpi_header = xheader.id
+            INNER JOIN wfm_schema.tx_kpi_type_v2 xtype ON xgroup.tx_kpi_type = xtype.id
+            LEFT JOIN wfm_schema.tm_kpi_type_v2 mtype ON xtype.tm_kpi_type = mtype.id
+        WHERE
+            mtype.type_kpi_code = 'PLN'
+            AND xheader.year_period = 2024
+            AND xheader.month_period BETWEEN 7 AND 10
+    ) subquery
+WHERE
+    xgroup.id = subquery.xgroup_id;
 
 -- Get KPI SOW & group PLN 
 -- Status: Done
