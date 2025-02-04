@@ -1,6 +1,10 @@
 SELECT
     combined_ticket.tx_user_mobile_management_id, 
     combined_ticket.employee_name,
+    combined_ticket.area_id,
+    combined_ticket.regional_id,
+    combined_ticket.nop_id,
+    combined_ticket.cluster_id,
     combined_ticket.created_at,
     combined_ticket.take_over_at,
     combined_ticket.checkin_at,
@@ -18,6 +22,10 @@ FROM (
     SELECT 
         tumm.tx_user_mobile_management_id, 
         tumm.employee_name,
+        tumm.area_id,
+        tumm.regional_id,
+        tumm.nop_id,
+        tumm.cluster_id,
         inap.status, 
         'INAP' AS source,
         string_agg(inap.ticket_no, ', ') AS ticket_no,
@@ -42,6 +50,10 @@ FROM (
     SELECT 
         tumm.tx_user_mobile_management_id, 
         tumm.employee_name, 
+        tumm.area_id,
+        tumm.regional_id,
+        tumm.nop_id,
+        tumm.cluster_id,
         sva.status,
         'SVA' AS source,
         string_agg(sva.ticket_no, ', ') AS ticket_no,
@@ -67,6 +79,10 @@ FROM (
     SELECT 
         tumm.tx_user_mobile_management_id, 
         tumm.employee_name,
+        tumm.area_id,
+        tumm.regional_id,
+        tumm.nop_id,
+        tumm.cluster_id,
         pm.status,
         'PM' AS source,
         string_agg(pm.pm_ticket_site_id, ', ') AS ticket_no,
@@ -92,6 +108,10 @@ FROM (
     SELECT 
         tumm.tx_user_mobile_management_id, 
         tumm.employee_name,
+        tumm.area_id,
+        tumm.regional_id,
+        tumm.nop_id,
+        tumm.cluster_id,
         fna.status,
         'FNA' AS source,
         string_agg(fna.no_ticket, ', ') AS ticket_no,
@@ -114,9 +134,18 @@ FROM (
     fna.take_over_at,
     fna.checkin_at
 ) AS combined_ticket
+WHERE 
+(combined_ticket.area_id = @AreaId or @AreaId = '') and 
+(combined_ticket.regional_id = @RegionalId or @RegionalId = '') and 
+(combined_ticket.nop_id = @NopId or @NopId = '') and 
+(combined_ticket.cluster_id = @ClusterId or @ClusterId = 0)
 GROUP BY 
 combined_ticket.tx_user_mobile_management_id, 
 combined_ticket.employee_name, 
+combined_ticket.area_id,
+combined_ticket.regional_id,
+combined_ticket.nop_id,
+combined_ticket.cluster_id,
 combined_ticket.status, 
 combined_ticket.created_at,
 combined_ticket.take_over_at,
