@@ -7,7 +7,7 @@ CREATE TABLE
         ticket_ipas_id VARCHAR(100),
         id_pelanggan VARCHAR(50),
         id_pelanggan_name VARCHAR(100),
-        site_id VARCHAR(25) REFERENCES wfm_uso_schema.tm_site(site_id),
+        site_id VARCHAR(25) REFERENCES wfm_uso_schema.tm_site (site_id),
         area_id VARCHAR(5),
         regional_id VARCHAR(5),
         nop_id VARCHAR(30),
@@ -58,7 +58,8 @@ CREATE TABLE
 CREATE TABLE
     wfm_uso_schema.tx_pengisian_token_listrik (
         tx_pengisian_token_listrik_id SERIAL PRIMARY KEY,
-        ref_ticket_no VARCHAR(100) REFERENCES wfm_uso_schema.tx_pengisian_token_listrik_header(ticket_no),
+        tx_pengisian_token_listrik_header_id INT REFERENCES wfm_uso_schema.tx_pengisian_token_listrik_header (tx_pengisian_token_listrik_header_id),
+        ref_ticket_no VARCHAR(100),
         id_pelanggan VARCHAR(50),
         billing_id VARCHAR(100),
         no_token VARCHAR(50),
@@ -71,5 +72,5 @@ CREATE TABLE
         foto_kwh_setelah_pengisian_guuid VARCHAR(255),
         status_pengisian_token VARCHAR(100),
         foto_evidence_guuid VARCHAR(255),
-        note text 
+        note text
     );
