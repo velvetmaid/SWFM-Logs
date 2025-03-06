@@ -19,7 +19,8 @@ CREATE TABLE
         bank_account VARCHAR(25),
         bank_account_name VARCHAR(25),
         -- Financial Information
-        regular_fee INT NOT NULL,
+        fee_pjs INT NOT NULL,
+        fee_jasa_pjs INT NOT NULL,
         total_fee INT NOT NULL,
         -- Status & Approval
         notes VARCHAR(255),
