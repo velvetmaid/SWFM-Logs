@@ -461,3 +461,109 @@ WHERE
     AND b.code = 'PLN'
     AND subquery.total_score >= subquery.min_value
     AND subquery.total_score < subquery.max_value;
+
+-- Start: Update KPI score
+-- Current used to update KPI score
+-- March 2025
+-- PLN
+UPDATE wfm_schema.tx_kpi_type_v2 b
+SET
+    score_kpi = subquery.total_score,
+    score_category = subquery.category_name
+FROM
+    (
+        SELECT
+            a.kpi_header,
+            SUM(a.score_final) AS total_score,
+            c.category_name,
+            c.min_value,
+            c.max_value
+        FROM
+            wfm_schema.tx_kpi_detail_v2 a
+            INNER JOIN wfm_schema.tx_kpi_type_v2 b ON a.kpi_header = b.kpi_header
+            INNER JOIN wfm_schema.tm_kpi_scoring_v2 c ON b.tm_kpi_type = c.tm_kpi_type
+        WHERE
+            a.tm_kpi_sow IN (33, 34, 35)
+            and b.code = 'PLN'
+            AND c.is_active = true
+            AND EXTRACT(
+                YEAR
+                FROM
+                    b.modified_at
+            ) = 2025
+            and EXTRACT(
+                month
+                FROM
+                    b.modified_at
+            ) = 2
+        GROUP BY
+            a.kpi_header,
+            c.category_name,
+            c.min_value,
+            c.max_value
+    ) AS subquery
+WHERE
+    b.kpi_header = subquery.kpi_header
+    AND b.code = 'PLN'
+    AND subquery.total_score >= subquery.min_value
+    AND subquery.total_score < subquery.max_value;
+
+SELECT
+    a.kpi_header,
+    SUM(a.score_final) AS total_score,
+    c.category_name,
+    c.min_value,
+    c.max_value
+FROM
+    wfm_schema.tx_kpi_detail_v2 a
+    INNER JOIN wfm_schema.tx_kpi_type_v2 b ON a.kpi_header = b.kpi_header
+    INNER JOIN wfm_schema.tm_kpi_scoring_v2 c ON b.tm_kpi_type = c.tm_kpi_type
+WHERE
+    a.tm_kpi_sow IN (33, 34, 35)
+    and b.code = 'PLN'
+    AND c.is_active = true
+    AND EXTRACT(
+        YEAR
+        FROM
+            b.modified_at
+    ) = 2025
+    and EXTRACT(
+        month
+        FROM
+            b.modified_at
+    ) = 2
+    and a.kpi_header = '6f4b58a0-bd1f-475c-9e97-4d7ed4ed29a2'
+GROUP BY
+    a.kpi_header,
+    c.category_name,
+    c.min_value,
+    c.max_value;
+
+-- Check KPI score
+SELECT
+    *
+FROM
+    wfm_schema.tx_kpi_type_v2 xtype
+    LEFT JOIN wfm_schema.tm_kpi_type_v2 mtype ON xtype.tm_kpi_type = mtype.id
+WHERE
+    mtype.type_kpi_code = 'PLN'
+    and EXTRACT(
+        YEAR
+        FROM
+            xtype.modified_at
+    ) = 2025
+    and EXTRACT(
+        month
+        FROM
+            xtype.modified_at
+    ) = 1;
+
+select
+    *
+from
+    wfm_schema.tx_kpi_detail_v2
+where
+    kpi_header = '6f4b58a0-bd1f-475c-9e97-4d7ed4ed29a2'
+    and tm_kpi_sow IN (33, 34, 35);
+
+-- End: Update KPI score
