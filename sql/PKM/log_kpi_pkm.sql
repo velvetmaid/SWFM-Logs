@@ -567,3 +567,10 @@ where
     and tm_kpi_sow IN (33, 34, 35);
 
 -- End: Update KPI score
+
+-- Check ticket that has been calculated
+select tn.nop_name, trp.ticket_no, status, submmit_at from wfm_schema.tx_recap_pln trp 
+inner join wfm_schema.tx_site ts on trp.site_id = ts.site_id
+inner join wfm_schema.tm_nop tn on ts.nop_id = tn.nop_id 
+where (trp.flag_period = 'FM' or trp.flag_period = 'SM')
+and EXTRACT(month FROM trp.submmit_at) = 1 and EXTRACT(year FROM trp.submmit_at) = 2025
