@@ -17,7 +17,8 @@ SELECT
         WHERE
             tptlh.bulan = 4
             AND tptlh.tahun = 2025
-    ) AS total_ticket
+    ) AS total_ticket;
+    
 SELECT
     count(*)
 FROM
@@ -95,3 +96,23 @@ SELECT
     tx_pengisian_token_listrik_header.ticket_ipas_id
 FROM
     wfm_schema.tx_pengisian_token_listrik_header
+
+
+
+
+select tptlh.ticket_no, tptlh.ticket_ipas_id, tptlh.id_pelanggan, tptlh.id_pelanggan_name,
+tptlh.site_id, ts.site_name, upper(ts.area_id) as area_name, tr.regional_name, tn.nop_name, tc.cluster_name,
+tptlh.status, tptlh.bulan, tptlh.tahun, tptl.billing_id, tptl.no_token, 
+tptl.denom_prepaid from wfm_schema.tx_pengisian_token_listrik_header tptlh 
+inner join wfm_schema.tx_pengisian_token_listrik tptl 
+on tptlh.ticket_no = tptl.ref_ticket_no
+left join wfm_schema.tx_site ts 
+on tptlh.site_id = ts.site_id 
+left join wfm_schema.tm_regional tr 
+on ts.regional_id = tr.regional_id 
+left join wfm_schema.tm_nop tn 
+on ts.nop_id = tn.nop_id 
+left join wfm_schema.tm_cluster tc 
+on ts.cluster_id = tc.cluster_id 
+where tptlh.bulan = 4 and tptlh.tahun = 2025
+order by tptlh.ticket_no 

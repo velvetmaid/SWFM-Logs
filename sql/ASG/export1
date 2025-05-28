@@ -1,0 +1,52 @@
+SELECT *
+FROM wfm_schema.asset_safe_guard AS asg
+INNER JOIN wfm_schema.tm_type_pengamanan_site AS tps 
+    ON asg.type_pengamanan_site_id = tps.tm_type_pengamanan_site_id
+INNER JOIN wfm_schema.tx_site AS site 
+    ON asg.site_id = site.site_id
+INNER JOIN wfm_schema.tm_regional AS reg 
+    ON asg.regional_id = reg.regional_id
+INNER JOIN wfm_schema.tm_nop AS nop 
+    ON asg.nop_id = nop.nop_id
+INNER JOIN wfm_schema.tm_cluster AS clu 
+    ON asg.cluster_id = clu.cluster_id
+LEFT JOIN wfm_schema.tx_user_management AS user_creator 
+    ON asg.created_by = CAST(user_creator.ref_user_id AS bigint)
+LEFT JOIN wfm_schema.tx_user_management AS user_approver 
+    ON asg.approve_by = user_approver.ref_user_id
+WHERE 
+    (
+        asg.area_id = '' 
+        OR asg.area_id = asg.area_id
+    )
+    AND (
+        asg.regional_id = '' 
+        OR asg.regional_id = asg.regional_id
+    )
+    AND (
+        asg.nop_id = '' 
+        OR asg.nop_id = asg.nop_id
+    )
+    AND (
+        asg.cluster_id = 0 
+        OR asg.cluster_id = asg.cluster_id
+    )
+    AND (
+        (StartDate <> DATE '1900-01-01' AND CAST(asg.created_at AS DATE) >= StartDate) 
+        OR StartDate = DATE '1900-01-01'
+    )
+    AND (
+        (EndDate <> DATE '1900-01-01' AND CAST(asg.created_at AS DATE) <= EndDate) 
+        OR EndDate = DATE '1900-01-01'
+    )
+    AND asg.is_active = CAST(1 AS boolean)
+    AND (
+        (asg.month_period <> 0 AND asg.month_period = asg.month_period) 
+        OR asg.month_period = 0
+    )
+    AND (
+        (asg.year_period <> 0 AND asg.year_period = asg.year_period) 
+        OR asg.year_period = 0
+    )
+    AND asg.approve_status <> 'REJECTED'
+ORDER BY asg.asset_safe_guard_id DESC;
