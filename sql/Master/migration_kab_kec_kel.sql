@@ -4,16 +4,13 @@
 -- Start
 -- WFM SCHEMA
 -- source from ndm 
-select distinct id_kec , id_kab from reference.master_site_territory
+select distinct id_kec , id_kab from reference.master_site_territory;
+
 CREATE TABLE wfm_schema.tm_mapping_kecamatan_kabupaten (
     kecamatan_id int,
     kabupaten_id int,
-    created_by VARCHAR(255) DEFAULT NULL,
-    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL,
-    modified_by VARCHAR(255) DEFAULT NULL,
+    modified_by VARCHAR(100) DEFAULT NULL,
     modified_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL,
-    deleted_by VARCHAR(255) DEFAULT NULL,
-    deleted_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL,
     is_active boolean DEFAULT TRUE,
     is_delete boolean DEFAULT FALSE
 )
@@ -31,12 +28,8 @@ WHERE tm_mapping_kabupaten_nop.nop_id = b.nop_name;
 CREATE TABLE wfm_schema.tm_mapping_kabupaten_nop (
 	kabupaten_id int4,
 	nop_id varchar(30),
-	created_by varchar(255) DEFAULT NULL,
-	created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL,
-	modified_by varchar(255) DEFAULT NULL,
+	modified_by varchar(100) DEFAULT NULL,
 	modified_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL,
-	deleted_by varchar(255) DEFAULT NULL,
-	deleted_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL,
 	is_active boolean DEFAULT TRUE,
 	is_delete boolean DEFAULT FALSE
 );
@@ -46,12 +39,8 @@ CREATE TABLE wfm_schema.tm_kabupaten (
     kabupaten_id int primary key,
     nop_id VARCHAR(30),
     kabupaten_name VARCHAR(100),
-    created_by VARCHAR(255) DEFAULT NULL,
-    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL,
-    modified_by VARCHAR(255) DEFAULT NULL,
+    modified_by VARCHAR(100) DEFAULT NULL,
     modified_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL,
-    deleted_by VARCHAR(255) DEFAULT NULL,
-    deleted_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL,
     is_active boolean DEFAULT TRUE,
     is_delete boolean DEFAULT FALSE
 )
@@ -59,12 +48,8 @@ CREATE TABLE wfm_schema.tm_kabupaten (
 CREATE TABLE wfm_schema.tm_kecamatan (
     kecamatan_id int,
     kecamatan_name VARCHAR(100),
-    created_by VARCHAR(255) DEFAULT NULL,
-    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL,
-    modified_by VARCHAR(255) DEFAULT NULL,
+    modified_by VARCHAR(100) DEFAULT NULL,
     modified_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL,
-    deleted_by VARCHAR(255) DEFAULT NULL,
-    deleted_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL,
     is_active boolean DEFAULT TRUE,
     is_delete boolean DEFAULT FALSE
 )
@@ -73,12 +58,8 @@ CREATE TABLE wfm_schema.tm_desa (
     desa_id varchar primary key,
     kecamatan_id int,
     desa_name VARCHAR(100),
-    created_by VARCHAR(255) DEFAULT NULL,
-    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL,
-    modified_by VARCHAR(255) DEFAULT NULL,
+    modified_by VARCHAR(100) DEFAULT NULL,
     modified_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL,
-    deleted_by VARCHAR(255) DEFAULT NULL,
-    deleted_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL,
     is_active boolean DEFAULT TRUE,
     is_delete boolean DEFAULT FALSE
 )
@@ -141,3 +122,12 @@ SELECT city, COUNT(*)
 from reference.master_site_territory
 GROUP BY city
 HAVING COUNT(*) > 1;
+
+ALTER TABLE wfm_schema. 
+DROP COLUMN created_by, 
+DROP COLUMN created_at, 
+DROP COLUMN deleted_by, 
+DROP COLUMN deleted_at, 
+ALTER COLUMN modified_by TYPE VARCHAR(100);
+ADD CONSTRAINT tm_mapping_kabupaten_nop_pkey 
+PRIMARY KEY (kabupaten_id, nop_id);
