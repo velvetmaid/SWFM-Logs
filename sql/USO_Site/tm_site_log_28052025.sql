@@ -82,7 +82,7 @@ address from reference.master_site_uso_territory msut
 inner join reference.ran_master_site_territory_swfm rmsts
 on msut.site_id = rmsts.site_id
 
--- alter
+-- alter os sql
 SELECT 
   {master_site_uso_territory}.[site_id],
   {master_site_uso_territory}.[site_name],
@@ -102,6 +102,50 @@ FROM
 INNER JOIN 
   {ran_master_site_territory_swfm}
   ON {master_site_uso_territory}.[site_id] = {ran_master_site_territory_swfm}.[site_id]
+
+-- alter fdw
+SELECT 
+  msut.site_id,
+  msut.site_name,
+  msut.longitude AS long,
+  msut.latitude AS lat,
+  msut.sitearea_to AS cluster_name,
+  msut.nop_name,
+  msut.id_region_network AS region_name,
+  rmsts.class,
+  msut.desa,
+  msut.kecamatan,
+  msut.kabupaten,
+  msut.provinsi,
+  msut.address
+FROM 
+  wfm_admin_schema.master_site_uso_territory msut
+INNER JOIN 
+  wfm_admin_schema.ran_master_site_territory_swfm rmsts
+ON msut.site_id = rmsts.site_id
+
+-- Insert into temporary table for USO sites
+INSERT INTO 
+{temp_ndm_site} (site_id, site_name, long, lat, cluster_name, nop_name, region_name, "class", desa, kecamatan, kabupaten,provinsi, address)
+SELECT 
+  msut.site_id,
+  msut.site_name,
+  msut.longitude AS long,
+  msut.latitude AS lat,
+  msut.sitearea_to AS cluster_name,
+  msut.nop_name,
+  msut.id_region_network AS region_name,
+  rmsts.class,
+  msut.desa,
+  msut.kecamatan,
+  msut.kabupaten,
+  msut.provinsi,
+  msut.address
+FROM 
+  wfm_admin_schema.master_site_uso_territory msut
+INNER JOIN 
+  wfm_admin_schema.ran_master_site_territory_swfm rmsts
+ON msut.site_id = rmsts.site_id
 -- end
 
 
