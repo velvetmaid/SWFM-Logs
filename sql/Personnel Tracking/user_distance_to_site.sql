@@ -3,8 +3,8 @@ OR REPLACE VIEW wfm_schema.vw_device_nearby_sites AS WITH latest_location AS (
     SELECT
         deviceudid,
         currenttime,
-        CAST(latitude AS DECIMAL(12,6)) AS latitude,
-        CAST(longitude AS DECIMAL(12,6)) AS longitude
+        CAST(latitude AS NUMERIC(12, 6)) AS latitude,
+        CAST(longitude AS NUMERIC(12, 6)) AS longitude
     FROM
         (
             SELECT
@@ -26,8 +26,12 @@ OR REPLACE VIEW wfm_schema.vw_device_nearby_sites AS WITH latest_location AS (
 clean_sites AS (
     SELECT
         site_id,
-        CAST(REPLACE(site_latitude, ',', '.') AS DECIMAL(12,6)) AS clean_lat,
-        CAST(REPLACE(site_longitude, ',', '.') AS DECIMAL(12,6)) AS clean_lon
+        CAST(
+            REPLACE(site_latitude, ',', '.') AS NUMERIC(12, 6)
+        ) AS clean_lat,
+        CAST(
+            REPLACE(site_longitude, ',', '.') AS NUMERIC(12, 6)
+        ) AS clean_lon
     FROM
         wfm_schema.tx_site
     WHERE
@@ -46,14 +50,16 @@ SELECT
     l.longitude as origin_lon,
     s.clean_lat as destination_lat,
     s.clean_lon as destination_lon,
-    6371000 * acos(
-        LEAST(
-            1,
-            GREATEST(
-                -1,
-                cos(radians(s.clean_lat)) * cos(radians(l.latitude)) * cos(radians(l.longitude) - radians(s.clean_lon)) + sin(radians(s.clean_lat)) * sin(radians(l.latitude))
+    CAST(
+        6371000 * acos(
+            LEAST(
+                1,
+                GREATEST(
+                    -1,
+                    cos(radians(s.clean_lat)) * cos(radians(l.latitude)) * cos(radians(l.longitude) - radians(s.clean_lon)) + sin(radians(s.clean_lat)) * sin(radians(l.latitude))
+                )
             )
-        )
+        ) AS NUMERIC(14, 4)
     ) AS distance
 FROM
     latest_location l
@@ -70,14 +76,16 @@ GROUP BY
     s.clean_lat,
     s.clean_lon
 HAVING
-    6371000 * acos(
-        LEAST(
-            1,
-            GREATEST(
-                -1,
-                cos(radians(s.clean_lat)) * cos(radians(l.latitude)) * cos(radians(l.longitude) - radians(s.clean_lon)) + sin(radians(s.clean_lat)) * sin(radians(l.latitude))
+    CAST(
+        6371000 * acos(
+            LEAST(
+                1,
+                GREATEST(
+                    -1,
+                    cos(radians(s.clean_lat)) * cos(radians(l.latitude)) * cos(radians(l.longitude) - radians(s.clean_lon)) + sin(radians(s.clean_lat)) * sin(radians(l.latitude))
+                )
             )
-        )
+        ) AS NUMERIC(14, 4)
     ) <= 25000
 ORDER BY
     distance desc;
