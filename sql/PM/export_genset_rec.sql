@@ -1,0 +1,20 @@
+select capacity from wfm_schema.tx_pm_genset_genset
+where tx_pm_ticket_genset_id like '%2024%'
+
+select tx_pm_ticket_genset_id,asset_terdapat_di_site,asset_terpasang,asset_rusak,asset_aktif,asset_dicuri,tsel_barcode,nama_asset,merk_asset,category_asset,serial_number,asset_owner,capacity,bonet,merk_mesin,merk_generator,running_hour_bulan_lalu,running_hour_bulan_ini,durasi_pengecekan,genset_model,coolent_level,coolent_level_keterangan,diesel_engine_oil,diesel_engine_oil_keterangan,tambah_ganti_oli,air_cleaner,air_cleaner_keterangan,battery_starter,battery_starter_keterangan,fan_belt,fan_belt_keterangan,sos_bottle,sos_bottle_keterangan,fuel_injection_nozzle,fuel_injection_nozzle_keterangan,inhibitor,inhibitor_keterangan,kekencangan_baut,kekencangan_baut_keterangan,kabel_accu_connector,kabel_accu_connector_keterangan,muffler_genset,muffler_genset_keterangan,air_accu,air_accu_keterangan,accu_voltage,accu_voltage_keterangan,mesin,mesin_keterangan from wfm_schema.tx_pm_genset_genset
+where tx_pm_ticket_genset_id like '%2024%'
+
+select * from wfm_schema.tx_pm_site_power_rectcontr
+limit 10
+
+select * from wfm_schema.tx_pm_site_power_rectmod
+limit 10
+
+select * from wfm_admin_schema.tm_parameter tp 
+where "group" = 'Network File Service'
+
+select count(*) from wfm_schema.asset_safe_guard asg 
+
+select * from wfm_admin_schema.tm_attachment_config tac 
+
+select * from wfm_admin_schema.tx_attachment_reference tar 

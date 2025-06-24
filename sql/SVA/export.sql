@@ -1,5 +1,6 @@
--- EXPORT SVA AREA 4
-WITH eventlog AS (
+-- EXPORT SVA 
+CREATE
+OR REPLACE VIEW wfm_schema.vw_sva_non_related AS WITH eventlog AS (
     SELECT
         transaction_id,
         MAX(
@@ -336,69 +337,10 @@ FROM
     LEFT JOIN tx_diff_time dt ON tch.cmsite_id = dt.cmsite_id
 where
     not tch.asset_change
-    and tch.area_id = 'Area4'
 order by
     tch.cmsite_id asc;
 
--- 
--- 
--- 
-activity_name = Review Draft by NOP < column Approval by Manager NOP < column Approval by NOS < column Approval by Manager NOS < column
-and action_name = Approve activity_name = change Status
-and action_name = lower(action_name) in (
-    'take over' < column,
-    'request permit' < column,
-    'follow up' < column,
-    'check in' < column
-) activity_name = Work Approve by SPVTO < column Work Approve by NOP < column Work Approve by NOS < column Work Approval by NOS MGR < column
-and action_name = Approve
-SELECT
-    transaction_id,
-    activity_name,
-    action_name,
-    actioner_name,
-    actioner_email,
-    action_on
-FROM
-    wfm_admin_schema.tx_eventlog
-WHERE
-    application_name = 'WFM'
-    AND process_id = '46'
-    and lower(action_name) in (
-        'submit',
-        'take over',
-        'request permit',
-        'follow up',
-        'check in',
-        'approve'
-    )
-order by
-    transaction_id desc
-SELECT
-    *
-FROM
-    wfm_admin_schema.tx_eventlog
-WHERE
-    application_name = 'WFM'
-    AND process_id = '46'
-    and action_name = 'Check In'
-order by
-    action_on desc
-select
-    *
-from
-    wfm_admin_schema.tm_workflow_setting tws
-ORDER BY
-    transaction_id :: int DESC;
-
-select
-    *
-from
-    wfm_admin_schema.tx_eventlog te
-where
-    transaction_id = '10005'
-    and process_name = 'Corrective Maintenance';
-
+-- Function to get the duration text from seconds
 CREATE
 OR REPLACE FUNCTION wfm_schema.get_diff_duration_text(seconds double precision) RETURNS text AS $ $ BEGIN IF seconds IS NULL THEN RETURN NULL;
 
@@ -413,3 +355,271 @@ END IF;
 END;
 
 $ $ LANGUAGE plpgsql IMMUTABLE;
+
+-- Select statement to test the view
+SELECT
+    te.transaction_id,
+    tch.cmsite_id,
+    tch.ticket_no,
+    MAX(
+        CASE
+            WHEN te.activity_name = 'Review Draft by NOP'
+            AND te.action_name = 'Approve' THEN te.action_on
+        END
+    ) AS draft_approve_by_nop,
+    MAX(
+        CASE
+            WHEN te.activity_name = 'Approval by Manager NOP'
+            AND te.action_name = 'Approve' THEN te.action_on
+        END
+    ) AS draft_approve_mgr_nop,
+    MAX(
+        CASE
+            WHEN te.activity_name = 'Approval by NOS'
+            AND te.action_name = 'Approve' THEN te.action_on
+        END
+    ) AS draft_approve_nos,
+    MAX(
+        CASE
+            WHEN te.activity_name = 'Approval by Manager NOS'
+            AND te.action_name = 'Approve' THEN te.action_on
+        END
+    ) AS draft_approve_mgr_nos,
+    MAX(
+        CASE
+            WHEN lower(te.action_name) = 'take over' THEN te.action_on
+        END
+    ) AS take_over,
+    MAX(
+        CASE
+            WHEN lower(te.action_name) = 'request permit' THEN te.action_on
+        END
+    ) AS request_permit,
+    MAX(
+        CASE
+            WHEN lower(te.action_name) = 'follow up' THEN te.action_on
+        END
+    ) AS follow_up,
+    MAX(
+        CASE
+            WHEN lower(te.action_name) = 'check in'
+            or lower(te.actioner_name) LIKE '%check in%' THEN te.action_on
+        END
+    ) AS check_in,
+    MAX(
+        CASE
+            WHEN te.activity_name = 'Work Approve by SPVTO'
+            AND te.action_name = 'Approve' THEN te.action_on
+        END
+    ) AS work_approve_spvto,
+    MAX(
+        CASE
+            WHEN te.activity_name = 'Work Approve by NOP'
+            AND te.action_name = 'Approve' THEN te.action_on
+        END
+    ) AS work_approve_nop,
+    MAX(
+        CASE
+            WHEN te.activity_name = 'Work Approve by NOS'
+            AND te.action_name = 'Approve' THEN te.action_on
+        END
+    ) AS work_approve_nos,
+    MAX(
+        CASE
+            WHEN te.activity_name = 'Work Approval by NOS MGR'
+            AND te.action_name = 'Approve' THEN te.action_on
+        END
+    ) AS work_approve_mgr_nos
+from
+    wfm_schema.tx_cmsite_header tch
+    inner join wfm_admin_schema.tx_eventlog te on tch.cmsite_id :: varchar = te.transaction_id
+WHERE
+    te.application_name = 'WFM'
+    AND te.process_id = '46'
+    AND (
+        lower(te.action_name) IN (
+            'submit',
+            'take over',
+            'request permit',
+            'follow up',
+            'check in',
+            'approve'
+        )
+        or lower(te.actioner_name) = 'check in'
+    )
+GROUP BY
+    te.transaction_id,
+    tch.cmsite_id
+limit
+    10;
+
+-- alter table wfm_schema.tx_cmsite_header
+--     add column ready_for_fms_time timestamp with time zone;
+WITH user_web AS (
+    SELECT
+        CAST(ref_user_id AS varchar) AS id,
+        employee_name,
+        email
+    FROM
+        { tx_user_management }
+    WHERE
+        is_active
+        AND NOT is_delete
+),
+user_mobile AS (
+    SELECT
+        CAST(tx_user_mobile_management_id AS varchar) AS id,
+        employee_name,
+        email
+    FROM
+        { tx_user_mobile_management }
+    WHERE
+        is_active
+        AND NOT is_delete
+),
+sla_eventlog AS (
+    SELECT
+        transaction_id,
+        activity_name,
+        action_on
+    FROM
+        wfm_admin_schema.tx_eventlog
+    WHERE
+        application_name = 'WFM'
+        AND process_id = '46'
+        AND activity_name IN (
+            'Approval By Manager NOS',
+            'Work Approval by NOS MGR'
+        )
+),
+sla AS (
+    SELECT
+        tch.cmsite_id,
+        CASE
+            WHEN (
+                CASE
+                    WHEN tch.cm_urgency = 'HIGH' THEN 48 * 60
+                    ELSE 30 * 24 * 60
+                END
+            ) >= (
+                CASE
+                    WHEN tch.closed_at = DATE '1900-01-01' THEN EXTRACT(
+                        EPOCH
+                        FROM
+                            (closed.action_on - approval.action_on)
+                    ) / 60
+                    ELSE EXTRACT(
+                        EPOCH
+                        FROM
+                            (tch.closed_at - tch.draft_approve_date)
+                    ) / 60
+                END
+            ) THEN TRUE
+            ELSE FALSE
+        END AS is_sla
+    FROM
+        { tx_cmsite_header } tch
+        LEFT JOIN sla_eventlog approval ON approval.transaction_id = tch.cmsite_id :: varchar
+        AND approval.activity_name = 'Approval By Manager NOS'
+        LEFT JOIN sla_eventlog closed ON closed.transaction_id = tch.cmsite_id :: varchar
+        AND closed.activity_name = 'Work Approval by NOS MGR'
+    WHERE
+        tch.status NOT IN ('WAITING ACTIVITY APPROVAL', 'CANCELED')
+        AND tch.draft_status = 'READY FOR FMS'
+)
+select
+    tch.ticket_no,
+    tch.status,
+    tch.draft_status,
+    tch.site_id,
+    vsm.site_name,
+    tch.cm_type,
+    tch.cm_urgency,
+    tch.issue_category,
+    tch.issue_explanation,
+    tch.service_layer,
+    tch.notes,
+    vsm.area_name,
+    vsm.regional_name,
+    vsm.nop_name,
+    vsm.cluster_name,
+    vcc.total_price,
+    CASE
+        WHEN tch.draft_approve_date = DATE '1900-01-01' THEN NULL
+        WHEN tch.cm_urgency = 'HIGH' THEN tch.draft_approve_date + INTERVAL '2 days'
+        ELSE tch.draft_approve_date + INTERVAL '30 days'
+    END AS due_time,
+    sla.is_sla,
+    uw.employee_name AS created_by,
+    um.employee_name AS pic_name,
+    tch.created_at,
+    tch.take_over_at,
+    tch.request_permit_at,
+    tch.follow_up_at,
+    tch.checkin_at,
+    tch.submit_date as submit_at,
+    tch.closed_at
+FROM
+    { tx_cmsite_header } tch
+    LEFT JOIN { vw_site_mapping_info } vsm ON tch.site_id = vsm.site_id
+    LEFT JOIN user_web uw ON tch.created_by = uw.id
+    LEFT JOIN user_mobile um ON tch.pic_id = um.id
+    LEFT JOIN sla ON tch.cmsite_id = sla.cmsite_id
+    left join { vw_cm_catalog } vcc on tch.cmsite_id = vcc.cmsite_id
+WHERE
+    (
+        CAST(tch.created_at AS DATE) >= @DateStart
+        OR @DateStart = '#1900-01-01#'
+    )
+    AND (
+        CAST(tch.created_at AS DATE) <= @DateEnd
+        OR @DateEnd = '#1900-01-01#'
+    )
+    AND (
+        @Area = ''
+        OR vsm.area_id = @Area
+    )
+    AND (
+        @Regional = ''
+        OR vsm.regional_id = @Regional
+    )
+    AND (
+        @NOP = ''
+        OR vsm.nop_id = @NOP
+    )
+    AND (
+        @Cluster = 0
+        OR vsm.cluster_id = @Cluster
+    )
+    AND (
+        LOWER(tch.ticket_no) LIKE '%' || LOWER(@Search) || '%'
+        OR LOWER(tch.site_id) LIKE '%' || LOWER(@Search) || '%'
+    )
+    AND (
+        tch.cm_type = @Type
+        OR @Type = ''
+    )
+    AND (
+        UPPER(tch.status) = UPPER(@Status)
+        OR @Status = ''
+        OR UPPER(tch.draft_status) = UPPER(@Status)
+    )
+    AND (
+        (
+            @IsRelated = 'RELATED'
+            AND tch.asset_change = TRUE
+        )
+        OR (
+            @IsRelated = 'NON-RELATED'
+            AND tch.asset_change = FALSE
+        )
+        OR (
+            @IsRelated NOT IN ('RELATED', 'NON-RELATED')
+        )
+    )
+    AND (
+        tch.vendor_code IS NULL
+        OR tch.vendor_code = ''
+    )
+ORDER BY
+    tch.cmsite_id ASC;
