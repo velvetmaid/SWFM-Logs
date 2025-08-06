@@ -340,7 +340,7 @@ order by
     tch.cmsite_id asc;
 
 CREATE
-OR REPLACE FUNCTION wfm_schema.get_diff_duration_text_hours_hours(seconds double precision) RETURNS text AS $ $ BEGIN IF seconds IS NULL THEN RETURN NULL;
+OR REPLACE FUNCTION wfm_schema.get_diff_duration_text_hours(seconds double precision) RETURNS text AS $ $ BEGIN IF seconds IS NULL THEN RETURN NULL;
 
 ELSIF seconds >= 3600 THEN RETURN floor(seconds / 3600) :: int || ' hours';
 
@@ -351,3 +351,16 @@ END IF;
 END;
 
 $ $ LANGUAGE plpgsql IMMUTABLE;
+
+CREATE OR REPLACE FUNCTION wfm_schema.get_diff_duration_text_hours(seconds double precision)
+RETURNS text AS $$
+BEGIN
+    IF seconds IS NULL THEN
+        RETURN NULL;
+    ELSIF seconds >= 3600 THEN
+        RETURN floor(seconds / 3600)::int || ' hours';
+    ELSE
+        RETURN '0 hours';
+    END IF;
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
