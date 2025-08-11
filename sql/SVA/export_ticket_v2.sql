@@ -163,9 +163,9 @@ sla_eventlog AS (
     SELECT
         transaction_id,
         activity_name,
-        action_on
+        MAX(action_on) AS action_on
     FROM
-        {tx_eventlog}
+        wfm_admin_schema.tx_eventlog
     WHERE
         application_name = 'WFM'
         AND process_id = '46'
@@ -173,6 +173,9 @@ sla_eventlog AS (
             'Approval By Manager NOS',
             'Work Approval by NOS MGR'
         )
+    GROUP BY
+        transaction_id,
+        activity_name
 ),
 sla as (
     select
@@ -285,6 +288,7 @@ SELECT
     tch.issue_category,
     tch.issue_explanation,
     tch.service_layer,
+    vcc.total_price,
     tch.notes,
     upper(tch.area_id) as area_name,
     r.regional_name,
@@ -334,6 +338,7 @@ FROM
     left join sla on tch.cmsite_id = sla.cmsite_id
     left join eventlog e on tch.cmsite_id :: varchar = e.transaction_id
     LEFT JOIN tx_diff_time dt ON tch.cmsite_id = dt.cmsite_id
+    LEFT JOIN {vw_cm_catalog} vcc on tch.cmsite_id = vcc.cmsite_id
 WHERE
     (
         CAST(tch.created_at AS DATE) >= @DateStart
@@ -536,7 +541,7 @@ sla_eventlog AS (
     SELECT
         transaction_id,
         activity_name,
-        action_on
+        MAX(action_on) AS action_on
     FROM
         wfm_admin_schema.tx_eventlog
     WHERE
@@ -546,6 +551,9 @@ sla_eventlog AS (
             'Approval By Manager NOS',
             'Work Approval by NOS MGR'
         )
+    GROUP BY
+        transaction_id,
+        activity_name
 ),
 sla as (
     select
@@ -658,6 +666,7 @@ SELECT
     tch.issue_category,
     tch.issue_explanation,
     tch.service_layer,
+    vcc.total_price,
     tch.notes,
     upper(tch.area_id) as area_name,
     r.regional_name,
@@ -737,6 +746,7 @@ FROM
     left join sla on tch.cmsite_id = sla.cmsite_id
     left join eventlog e on tch.cmsite_id :: varchar = e.transaction_id
     LEFT JOIN tx_diff_time dt ON tch.cmsite_id = dt.cmsite_id
+    LEFT JOIN {vw_cm_catalog} vcc on tch.cmsite_id = vcc.cmsite_id
 where
     (
         CAST(tch.created_at AS DATE) >= @DateStart
@@ -794,3 +804,73 @@ where
     )
 order by
     tch.cmsite_id asc;
+
+
+-- Based on OS syntax for timeline
+-- 
+SELECT tch.ticket_no, tch.status, tch.site_id, te.activity_name as activity, 
+te.action_name as action, te.created_on as action_at,
+te.actioner_name, te.actioner_email, te.comment
+FROM {tx_cmsite_header} tch 
+left join {vw_site_mapping_info} vsm 
+on tch.site_id = vsm.site_id  
+left join {tx_eventlog} te 
+on tch.cmsite_id::varchar = te.transaction_id
+WHERE te.application_name = 'WFM'
+    AND te.process_name = 'Corrective Maintenance'
+    AND
+    (
+        CAST(tch.created_at AS DATE) >= @DateStart
+        OR @DateStart = '#1900-01-01#'
+    )
+    AND (
+        CAST(tch.created_at AS DATE) <= @DateEnd
+        OR @DateEnd = '#1900-01-01#'
+    )
+    AND (
+        @Area = ''
+        OR vsm.area_id = @Area
+    )
+    AND (
+        @Regional = ''
+        OR vsm.regional_id = @Regional
+    )
+    AND (
+        @NOP = ''
+        OR vsm.nop_id = @NOP
+    )
+    AND (
+        @Cluster = 0
+        OR vsm.cluster_id = @Cluster
+    )
+    AND (
+        LOWER(tch.ticket_no) LIKE '%' || LOWER(@Search) || '%'
+        OR LOWER(tch.site_id) LIKE '%' || LOWER(@Search) || '%'
+    )
+    AND (
+        tch.cm_type = @Type
+        OR @Type = ''
+    )
+    AND (
+        UPPER(tch.status) = UPPER(@Status)
+        OR @Status = ''
+        OR UPPER(tch.draft_status) = UPPER(@Status)
+    )
+    AND (
+        (
+            @IsRelated = 'RELATED'
+            AND tch.asset_change = TRUE
+        )
+        OR (
+            @IsRelated = 'NON-RELATED'
+            AND tch.asset_change = FALSE
+        )
+        OR (
+            @IsRelated NOT IN ('RELATED', 'NON-RELATED')
+        )
+    )
+    AND (
+        tch.vendor_code IS NULL
+        OR tch.vendor_code = ''
+    )
+ORDER BY te.action_on desc 
