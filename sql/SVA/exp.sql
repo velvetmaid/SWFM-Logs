@@ -82,6 +82,7 @@ select
     tch.issue_category,
     tch.issue_explanation,
     tch.service_layer,
+    vcc.total_price,
     tch.notes,
     UPPER(tch.area_id) AS area_id,
     vsm.area_name,
@@ -107,7 +108,8 @@ FROM
     LEFT JOIN user_web uw ON tch.created_by = uw.id
     LEFT JOIN user_mobile um ON tch.pic_id = um.id
     LEFT JOIN wfm_schema.vw_site_mapping_info vsm ON tch.site_id = vsm.site_id
-    LEFT JOIN sla ON tch.cmsite_id = sla.cmsite_id;
+    LEFT JOIN sla ON tch.cmsite_id = sla.cmsite_id
+    left join wfm_schema.vw_cm_catalog vcc on tch.cmsite_id = vcc.cmsite_id;
 
 -- alter table wfm_schema.tx_cmsite_header
 WITH user_web AS (

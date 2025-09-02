@@ -1,52 +1,144 @@
-SELECT *
-FROM wfm_schema.asset_safe_guard AS asg
-INNER JOIN wfm_schema.tm_type_pengamanan_site AS tps 
-    ON asg.type_pengamanan_site_id = tps.tm_type_pengamanan_site_id
-INNER JOIN wfm_schema.tx_site AS site 
-    ON asg.site_id = site.site_id
-INNER JOIN wfm_schema.tm_regional AS reg 
-    ON asg.regional_id = reg.regional_id
-INNER JOIN wfm_schema.tm_nop AS nop 
-    ON asg.nop_id = nop.nop_id
-INNER JOIN wfm_schema.tm_cluster AS clu 
-    ON asg.cluster_id = clu.cluster_id
-LEFT JOIN wfm_schema.tx_user_management AS user_creator 
-    ON asg.created_by = CAST(user_creator.ref_user_id AS bigint)
-LEFT JOIN wfm_schema.tx_user_management AS user_approver 
-    ON asg.approve_by = user_approver.ref_user_id
-WHERE 
+-- Sample
+select distinct
+    ENtx_asset_safe_guard.no_ticket,
+    ENtx_asset_safe_guard.site_id,
+    ENtx_site.site_name,
+    ENtx_site.area_id,
+    ENtx_site.regional_name,
+    ENtx_site.nop_name,
+    ENtx_site.cluster_name,
+    ENtx_asset_safe_guard.type_payment,
+    ENtm_type_pengamanan_site.name,
+    ENtx_asset_safe_guard.month_period,
+    ENtx_asset_safe_guard.year_period,
+    ENtx_asset_safe_guard.regular_fee,
+    ENtx_asset_safe_guard.total_fee,
+    ENtx_asset_safe_guard.nama_penjaga,
+    ENtx_asset_safe_guard.phone_num,
+    ENtx_asset_safe_guard.notes,
+    ENtx_asset_safe_guard.approve_status as status,
+    ENtx_asset_safe_guard.created_at,
+    ENuser_creator.employee_name as creator_user_name,
+    ENuser_creator.email as createor_user_email,
+    ENtx_asset_safe_guard.approve_at,
+    ENuser_approver.employee_name as approver_user_name,
+    ENuser_approver.email as approver_user_email
+FROM
+    wfm_schema.asset_safe_guard AS ENtx_asset_safe_guard
+    LEFT JOIN wfm_schema.tm_type_pengamanan_site AS ENtm_type_pengamanan_site ON ENtx_asset_safe_guard.type_pengamanan_site_id = ENtm_type_pengamanan_site.tm_type_pengamanan_site_id
+    INNER JOIN wfm_schema.vw_site_mapping_info AS ENtx_site ON ENtx_asset_safe_guard.site_id = ENtx_site.site_id
+    LEFT JOIN (
+        SELECT DISTINCT
+            ON (ref_user_id) *
+        FROM
+            wfm_schema.tx_user_management
+        ORDER BY
+            ref_user_id,
+            created_at DESC
+    ) AS ENuser_creator ON ENtx_asset_safe_guard.created_by = ENuser_creator.ref_user_id
+    LEFT JOIN (
+        SELECT DISTINCT
+            ON (ref_user_id) *
+        FROM
+            wfm_schema.tx_user_management
+        ORDER BY
+            ref_user_id,
+            created_at DESC
+    ) AS ENuser_approver ON ENtx_asset_safe_guard.approve_by = ENuser_approver.ref_user_id
+WHERE
+    ENtx_asset_safe_guard.is_active = true
+    AND ENtx_asset_safe_guard.approve_status <> 'REJECTED'
+    and ENtx_site.area_id = 'Area4'
+    and ENtx_site.regional_id = 'R08'
+    and ENtx_site.nop_id = 'NOP50'
+    and ENtx_asset_safe_guard.month_period = 6
+    and ENtx_asset_safe_guard.year_period = 2025;
+
+-- 
+select distinct
+    asg.no_ticket,
+    asg.site_id,
+    vsmi.site_name,
+    vsmi.area_id,
+    vsmi.regional_name,
+    vsmi.nop_name,
+    vsmi.cluster_name,
+    asg.type_payment,
+    ttps.name,
+    asg.month_period,
+    asg.year_period,
+    asg.regular_fee,
+    asg.total_fee,
+    asg.nama_penjaga,
+    asg.phone_num,
+    asg.notes,
+    asg.approve_status as status,
+    asg.created_at,
+    uc.employee_name as creator_user_name,
+    uc.email as createor_user_email,
+    asg.approve_at,
+    ua.employee_name as approver_user_name,
+    ua.email as approver_user_email
+FROM
+    wfm_schema.asset_safe_guard AS asg
+    LEFT JOIN wfm_schema.tm_type_pengamanan_site AS ttps ON asg.type_pengamanan_site_id = ttps.tm_type_pengamanan_site_id
+    INNER JOIN wfm_schema.vw_site_mapping_info AS vsmi ON asg.site_id = vsmi.site_id
+    LEFT JOIN (
+        SELECT DISTINCT 
+            ON (ref_user_id) *
+        FROM
+            wfm_schema.tx_user_management
+        ORDER BY
+            ref_user_id,
+            created_at DESC
+    ) AS uc ON asg.created_by = uc.ref_user_id
+    LEFT JOIN (
+        SELECT DISTINCT
+            ON (ref_user_id) *
+        FROM
+            wfm_schema.tx_user_management
+        ORDER BY
+            ref_user_id,
+            created_at DESC
+    ) AS ua ON asg.approve_by = ua.ref_user_id
+WHERE
+  (
     (
-        asg.area_id = '' 
-        OR asg.area_id = asg.area_id
-    )
-    AND (
-        asg.regional_id = '' 
-        OR asg.regional_id = asg.regional_id
-    )
-    AND (
-        asg.nop_id = '' 
-        OR asg.nop_id = asg.nop_id
-    )
-    AND (
-        asg.cluster_id = 0 
-        OR asg.cluster_id = asg.cluster_id
-    )
-    AND (
-        (StartDate <> DATE '1900-01-01' AND CAST(asg.created_at AS DATE) >= StartDate) 
-        OR StartDate = DATE '1900-01-01'
-    )
-    AND (
-        (EndDate <> DATE '1900-01-01' AND CAST(asg.created_at AS DATE) <= EndDate) 
-        OR EndDate = DATE '1900-01-01'
-    )
-    AND asg.is_active = CAST(1 AS boolean)
-    AND (
-        (asg.month_period <> 0 AND asg.month_period = asg.month_period) 
-        OR asg.month_period = 0
-    )
-    AND (
-        (asg.year_period <> 0 AND asg.year_period = asg.year_period) 
-        OR asg.year_period = 0
-    )
-    AND asg.approve_status <> 'REJECTED'
-ORDER BY asg.asset_safe_guard_id DESC;
+      @FilterArea = ''
+    ) 
+    OR asg.area_id = @FilterArea
+  ) 
+  AND (
+    (
+      @FilterRegional = ''
+    ) 
+    OR asg.regional_id = @FilterRegional
+  ) 
+  AND (
+    (@FilterNOP = '') 
+    OR asg.nop_id = @FilterNOP
+  ) 
+  AND (
+    (
+      @FilterCluster = 0
+    ) 
+    OR asg.cluster_id = @FilterCluster
+  ) 
+  AND (
+    UPPER(@InputSearch) = '' 
+    OR UPPER(
+      asg.no_ticket
+    ) LIKE '%' || UPPER(@InputSearch) || '%' 
+    OR UPPER(asg.site_id) LIKE '%' || UPPER(@InputSearch) || '%' 
+    OR UPPER(ttps.name) LIKE '%' || UPPER(@InputSearch) || '%' 
+    OR UPPER(
+      asg.nama_penjaga
+    ) LIKE '%' || UPPER(@InputSearch) || '%' 
+    OR UPPER(vsmi.site_name) LIKE '%' || UPPER(@InputSearch) || '%' 
+    OR UPPER(asg.notes) LIKE '%' || UPPER(@InputSearch) || '%' 
+    OR UPPER(
+      asg.approve_status
+    ) LIKE '%' || UPPER(@InputSearch) || '%'
+  ) 
+  AND asg.is_active 
+  AND asg.approve_status <> 'REJECTED'
