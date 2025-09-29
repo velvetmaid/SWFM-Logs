@@ -1,5 +1,6 @@
 .env
 venv
 attachments/*
+attachments_download/*
 *.xlsx
 *.bak

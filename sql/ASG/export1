@@ -141,4 +141,78 @@ WHERE
     ) LIKE '%' || UPPER(@InputSearch) || '%'
   ) 
   AND asg.is_active 
+  AND asg.approve_status <> 'REJECTED';
+
+  -- New
+WITH latest_user AS (
+  SELECT 
+    *,
+    ROW_NUMBER() OVER (PARTITION BY ref_user_id ORDER BY created_at DESC) AS rn
+  FROM {tx_user_management} tum
+  WHERE tum.is_active and not tum.is_delete 
+)
+SELECT DISTINCT
+  asg.no_ticket,
+  asg.site_id,
+  vsmi.site_name,
+  UPPER(asg.area_id) as area_name,
+  tr.regional_name,
+  tn.nop_name,
+  tc.cluster_name,
+  asg.approve_status AS status,
+  asg.type_payment,
+  ttps.name AS type_pengamanan,
+  TO_CHAR(TO_DATE(asg.year_period::text || '-' || asg.month_period::text || '-01', 'YYYY-MM-DD'), 'FMMonth YYYY') AS periode,
+  asg.regular_fee,
+  asg.total_fee,
+  asg.nama_penjaga,
+  asg.phone_num,
+  asg.notes,
+  asg.created_at,
+  CASE 
+    WHEN cu.employee_name IS NULL AND (cu.email IS NULL OR cu.email = '') THEN NULL
+    ELSE CONCAT(COALESCE(cu.employee_name, ''), 
+                CASE WHEN cu.email IS NOT NULL AND cu.email <> '' THEN ' (' || cu.email || ')' ELSE '' END)
+  END AS created_by,
+  asg.approve_at,
+  CASE 
+    WHEN au.employee_name IS NULL AND (au.email IS NULL OR au.email = '') THEN NULL
+    ELSE CONCAT(COALESCE(au.employee_name, ''), 
+                CASE WHEN au.email IS NOT NULL AND au.email <> '' THEN ' (' || au.email || ')' ELSE '' END)
+  END AS approver_by
+FROM 
+  {tx_asset_safe_guard} AS asg
+  LEFT JOIN {tm_type_pengamanan_site} AS ttps ON asg.type_pengamanan_site_id = ttps.tm_type_pengamanan_site_id
+  INNER JOIN {vw_site_mapping_info} AS vsmi ON asg.site_id = vsmi.site_id
+  LEFT JOIN (
+    SELECT * FROM latest_user WHERE rn = 1
+    ) AS cu ON asg.created_by = cu.ref_user_id
+  LEFT JOIN (
+      SELECT * FROM latest_user WHERE rn = 1
+    ) AS au ON asg.approve_by = au.ref_user_id
+  LEFT JOIN {tm_regional} AS tr ON asg.regional_id = tr.regional_id
+  LEFT JOIN {tm_nop} AS tn ON asg.nop_id = tn.nop_id
+  LEFT JOIN {tm_cluster} AS tc ON asg.cluster_id = tc.cluster_id
+WHERE 
+  (CAST(asg.created_at AS DATE) >= @DateStart OR @DateStart = '#1900-01-01#')
+  AND (CAST(asg.created_at AS DATE) <= @DateEnd OR @DateEnd = '#1900-01-01#')
+  AND (@Area = '' OR asg.area_id = @Area)
+  AND (@Regional = '' OR asg.regional_id = @Regional)
+  AND (@NOP = '' OR asg.nop_id = @NOP)
+  AND (@Cluster = 0 OR asg.cluster_id = @Cluster)
+  AND (@MonthPeriod = 0 OR COALESCE(asg.month_period, 0) = @MonthPeriod)
+  AND (@YearPeriod = 0 OR COALESCE(asg.year_period, 0) = @YearPeriod)
+  AND (
+    UPPER(@InputSearch) = '' 
+    OR UPPER(asg.no_ticket) LIKE '%' || UPPER(@InputSearch) || '%' 
+    OR UPPER(asg.site_id) LIKE '%' || UPPER(@InputSearch) || '%' 
+    OR UPPER(ttps.name) LIKE '%' || UPPER(@InputSearch) || '%' 
+    OR UPPER(asg.nama_penjaga) LIKE '%' || UPPER(@InputSearch) || '%' 
+    OR UPPER(vsmi.site_name) LIKE '%' || UPPER(@InputSearch) || '%' 
+    OR UPPER(asg.notes) LIKE '%' || UPPER(@InputSearch) || '%' 
+    OR UPPER(asg.approve_status) LIKE '%' || UPPER(@InputSearch) || '%'
+  )
+  AND asg.is_active = true
   AND asg.approve_status <> 'REJECTED'
+  AND (@Status = '' OR asg.approve_status = @Status)
+ORDER BY asg.created_at DESC;

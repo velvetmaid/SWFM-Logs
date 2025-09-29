@@ -39,3 +39,17 @@ AND {inap_avail_ne_base_site_level_daily_recon}.[regional] IN ('R02')
 GROUP BY 
 {inap_avail_ne_base_site_level_daily_recon}.[denum], {inap_avail_ne_base_site_level_daily_recon}.[site_id], 
 {inap_avail_ne_base_site_level_daily_recon}.[site_class]
+
+
+-- sql
+select 
+        sum(down_duration) as down_dur, sum(denum) as denum, sum(power_duration) as power_duration,
+       (1 - (sum(power_duration)/ sum(denum))) *100 as avail, ic.site_id as site_id,
+        ic.site_class as site_class
+from region_nationwide.inap_avail_ne_base_site_level_daily_recon ic
+where ic.site_id IN ('PBU156', 'PBU156')
+AND ic.month_period IN ('202505')
+AND ic.regional IN ('REGIONAL8')
+GROUP BY 
+ic.denum, ic.site_id, 
+ic.site_class

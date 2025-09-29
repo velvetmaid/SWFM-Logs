@@ -6,23 +6,23 @@ const { poolSWFM } = require("./config");
 const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
 const col = [
-  "idpel", 
-  "pelname", 
-  "goltarif", 
-  "daya", 
-  "billtype", 
-  "plafond", 
-  "siteid", 
-  "sitename", 
-  "regional", 
-  "statussite", 
-  "tower", 
-  "statusidpel", 
-  "tx_request_powerid", 
-  "tm_powerid", 
-  "area", 
-  "billresponsibility", 
-  "siteowner"
+  "idpel",
+  "pelname",
+  "goltarif",
+  "daya",
+  "billtype",
+  "plafond",
+  "siteid",
+  "sitename",
+  "regional",
+  "statussite",
+  "tower",
+  "statusidpel",
+  "tx_request_powerid",
+  "tm_powerid",
+  "area",
+  "billresponsibility",
+  "siteowner",
 ];
 
 const apiToDbMapping = {
@@ -42,7 +42,7 @@ const apiToDbMapping = {
   Tm_PowerId: "tm_powerid",
   Area: "area",
   BillResponsibility: "billresponsibility",
-  SiteOwner: "siteowner"
+  SiteOwner: "siteowner",
 };
 
 const data = {
@@ -61,6 +61,14 @@ const data = {
   BillResponsibilityId: "",
 };
 
+const mapApiRowToDb = (row) => {
+  const mapped = {};
+  for (const [apiKey, dbKey] of Object.entries(apiToDbMapping)) {
+    mapped[dbKey] = row[apiKey] ?? null;
+  }
+  return mapped;
+};
+
 (async () => {
   const clientA = await poolSWFM();
   try {
@@ -71,18 +79,15 @@ const data = {
       { httpsAgent }
     );
     const endA = performance.now();
-    const resultA = response.data;
+    const rows = response.data;
 
-    console.log("API Response:", JSON.stringify(resultA, null, 2));
-
-    const rows = resultA;
-
-    if (rows.length === 0) {
-      console.log("No data received from API.");
+    if (!rows.length) {
+      console.log("⚠️ No data received from API.");
       return;
     }
 
-    console.log(`Executed in ${Math.round(endA - startA)} ms`);
+    console.log(`✅ API executed in ${Math.round(endA - startA)} ms`);
+    console.log(`📦 Total records: ${rows.length}`);
 
     const numParams = col.length;
     const placeholders = Array.from(
@@ -95,28 +100,38 @@ const data = {
       VALUES (${placeholders})
       ON CONFLICT (tm_powerid)
       DO UPDATE SET ${col
-        .map((col) => `${col} = EXCLUDED.${col}`)
+        .filter((c) => c !== "tm_powerid")
+        .map((c) => `${c} = EXCLUDED.${c}`)
         .join(", ")};
     `;
 
+    const BATCH_SIZE = 100;
     const startB = performance.now();
-    for (const row of rows) {
-      const params = col.map((col) => row[Object.keys(apiToDbMapping).find(key => apiToDbMapping[key] === col)]);
 
-      console.log("Executing query with params:", params);
-      const result = await clientA.query(insertOrUpdateQuery, params);
-      console.log("Query result:", result);
+    for (let i = 0; i < rows.length; i += BATCH_SIZE) {
+      const batch = rows.slice(i, i + BATCH_SIZE);
+
+      await Promise.all(
+        batch.map(async (row) => {
+          const mapped = mapApiRowToDb(row);
+          const params = col.map((c) => mapped[c]);
+          await clientA.query(insertOrUpdateQuery, params);
+        })
+      );
+
+      console.log(
+        `✅ Inserted batch ${Math.ceil(i / BATCH_SIZE) + 1}/${Math.ceil(
+          rows.length / BATCH_SIZE
+        )}`
+      );
     }
-    const endB = performance.now();
-    console.log(
-      `Insert/Update Power PLN IPAS queries executed in ${Math.round(
-        endB - startB
-      )} ms`
-    );
 
-    console.log("Data seed successfully!");
+    const endB = performance.now();
+    console.log(`🚀 All data processed in ${Math.round(endB - startB)} ms`);
+    console.log("🎉 Data seed complete!");
   } catch (error) {
-    console.log("Error:", error);
+    console.error("🔥 Error:", error.message);
+    console.error(error.stack);
   } finally {
     await clientA.end();
   }
