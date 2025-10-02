@@ -410,4 +410,4 @@ for col in ws.columns:
 
 # --- Simpan Excel final ---
 wb.save(excel_path)
-print(f"\n✅ Finished -> {excel_path}")
+print(f"\n Finished -> {excel_path}")

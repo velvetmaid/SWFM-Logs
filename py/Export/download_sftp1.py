@@ -45,7 +45,7 @@ for col in location_columns:
     all_guids.update(df[col].dropna().tolist())
 
 if not all_guids:
-    print("⚠️ Tidak ada GUID ditemukan.")
+    print("Tidak ada GUID ditemukan.")
     conn.close()
     exit()
 
@@ -58,7 +58,7 @@ guid_df = pd.read_sql_query(query_path, conn)
 guid_to_path = dict(zip(guid_df['id'], guid_df['file_path']))
 
 with paramiko.Transport((SFTP_HOST, SFTP_PORT)) as transport:
-    print("⚙️ Connecting to SFTP...")
+    print("Connecting to SFTP...")
     transport.connect(username=SFTP_USER, password=SFTP_PASS)
     sftp = paramiko.SFTPClient.from_transport(transport)
 
@@ -67,14 +67,14 @@ with paramiko.Transport((SFTP_HOST, SFTP_PORT)) as transport:
         local_path = os.path.join(LOCAL_ATTACHMENT_FOLDER, filename)
 
         if os.path.exists(local_path):
-            print(f"⚡ File sudah ada, skip: {filename}")
+            print(f"File sudah ada, skip: {filename}")
             continue
 
         try:
             sftp.get(path, local_path)
             print(f"📥 Downloaded: {filename}")
         except Exception as e:
-            print(f"❌ Gagal download {filename}: {e}")
+            print(f"Gagal download {filename}: {e}")
 
 conn.close()
-print("\n✅ Semua file berhasil diproses di folder 'attachments_download/'")
+print("\ Done proses 'attachments_download/'")

@@ -60,7 +60,7 @@ for col in location_columns:
     all_guids.update(df[col].dropna().tolist())
 
 if not all_guids:
-    print("⚠️ Tidak ada GUID ditemukan.")
+    print("Tidak ada GUID.")
     conn.close()
     exit()
 
@@ -89,7 +89,7 @@ with paramiko.Transport((SFTP_HOST, SFTP_PORT)) as transport:
             sftp.get(path, local_path)
             print(f"📥 Downloaded: {filename}")
         except Exception as e:
-            print(f"❌ Gagal download {filename}: {e}")
+            print(f"Gagal download {filename}: {e}")
 
 conn.close()
-print("\n✅ Semua file berhasil diproses di folder 'attachments_download/'")
+print("\ Done proses 'attachments_download/'")

@@ -26,8 +26,8 @@ try:
         port=SFTP_PORT,
         cnopts=cnopts
     ) as sftp:
-        print("✅ Connected to SFTP")
-        print("📁 Root SFTP contents:")
+        print("Connected to SFTP")
+        print("Root SFTP contents:")
 
         total_size = get_total_file_size(sftp, '.')
         for file in sftp.listdir('.'):
@@ -36,4 +36,4 @@ try:
         print(f"\n📦 Total file size di folder ini: {total_size / (1024*1024):.2f} MB")
 
 except Exception as e:
-    print("❌ Fail to connect SFTP:", str(e))
+    print("Fail to connect SFTP:", str(e))
