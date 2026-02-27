@@ -6,6 +6,8 @@ from openpyxl import load_workbook
 from openpyxl.styles import Font
 from openpyxl.worksheet.table import Table, TableStyleInfo
 from datetime import datetime
+import math
+import re
 
 # --- Load .env ---
 load_dotenv()
@@ -36,8 +38,7 @@ with open("query.sql", "r") as f:
 # --- Get data ---
 df = pd.read_sql_query(query, conn)
 
-# --- Clean ---
-import re
+# --- Clean illegal chars ---
 def clean_illegal_chars(val):
     if isinstance(val, str):
         return re.sub(r"[\x00-\x1F\x7F]", "", val)
@@ -48,27 +49,42 @@ df = df.applymap(clean_illegal_chars)
 # --- Close conn ---
 conn.close()
 
-# --- Export Excel ---
+# --- Export Excel (split into multiple sheets if needed) ---
 excel_path = f"{current_time}_export.xlsx"
-df.to_excel(excel_path, index=False)
+max_rows = 1048576  # Excel limit
+usable_rows = max_rows - 1
+
+num_sheets = math.ceil(len(df) / usable_rows)
+
+with pd.ExcelWriter(excel_path, engine="openpyxl") as writer:
+    for i in range(num_sheets):
+        start_row = i * usable_rows
+        end_row = min((i + 1) * usable_rows, len(df))
+        df_chunk = df.iloc[start_row:end_row]
+
+        sheet_name = f"Sheet{i+1}"
+        df_chunk.to_excel(writer, sheet_name=sheet_name, index=False)
+
 
 # --- Format Excel ---
 wb = load_workbook(excel_path)
-ws = wb.active
 
-# Bold header + freeze pane
-for cell in ws[1]:
-    cell.font = Font(bold=True)
-ws.freeze_panes = "A2"
+for sheet in wb.sheetnames:
+    ws = wb[sheet]
 
-# Sortable table
-table_range = f"A1:{ws.cell(row=1, column=ws.max_column).column_letter}{ws.max_row}"
-table = Table(displayName="DataTable", ref=table_range)
-style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False,
-                       showLastColumn=False, showRowStripes=True, showColumnStripes=False)
-table.tableStyleInfo = style
-ws.add_table(table)
+    # Bold header + freeze pane
+    for cell in ws[1]:
+        cell.font = Font(bold=True)
+    ws.freeze_panes = "A2"
+
+    # Sortable table
+    table_range = f"A1:{ws.cell(row=1, column=ws.max_column).column_letter}{ws.max_row}"
+    table = Table(displayName=f"DataTable_{sheet}", ref=table_range)
+    style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False,
+                           showLastColumn=False, showRowStripes=True, showColumnStripes=False)
+    table.tableStyleInfo = style
+    ws.add_table(table)
 
 # Save
 wb.save(excel_path)
-print(f"\n Finished -> {excel_path}")
+print(f"\n Finished -> {excel_path} dengan {num_sheets} sheet")
